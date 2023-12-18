@@ -6,7 +6,8 @@ class User extends Model<InferAttributes<User>, InferCreationAttributes<User>> {
     declare firstName: string;
     declare lastName: string;
     declare email: string;
-    declare password: string
+    declare phoneNo: number;
+    declare password: string;
 }
 
 User.init({
@@ -30,6 +31,10 @@ User.init({
         validate: {
             isEmail:true
         }
+    },
+    phoneNo: {
+        type:DataTypes.INTEGER,
+        allowNull:false
     },
     password: {
         type:DataTypes.STRING,

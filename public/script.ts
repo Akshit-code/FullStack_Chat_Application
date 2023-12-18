@@ -11,18 +11,20 @@ interface SignUpForm {
     firstName:string;
     lastName:string;
     email:string;
-    password:string
+    password:string;
+    phoneNo:number;
 }
 
 interface LoginForm {
-    email:string;
-    password:string
+    phoneNo:number
+    password:string;
 }
 
 interface UserDetails {
     firstName:string;
     lastName:string;
     email:string;
+    phoneNo:number;
     token:string;
 }
 
@@ -41,12 +43,13 @@ const confirmPassword: FormElement | null = document.getElementById("confirmPass
 const firstName: FormElement | null = document.getElementById("firstName") as FormElement | null;
 const lastName: FormElement | null = document.getElementById("lastName") as FormElement | null;
 const email: FormElement | null = document.getElementById("email") as FormElement | null;
+const phoneNo: FormElement | null = document.getElementById("phoneNo") as FormElement | null;
 
 
 const loginDiv: HTMLDivElement | null = document.getElementById("login-form-div") as HTMLDivElement | null;
 const loginBtn: HTMLButtonElement | null = document.getElementById("login-btn") as HTMLButtonElement | null;
 const loginForm: HTMLFormElement | null = document.getElementById("login-form") as HTMLFormElement | null;
-const loginEmail: FormElement | null = document.getElementById('login-email') as FormElement | null;
+const loginPhoneNo: FormElement | null = document.getElementById("login-phoneNo") as FormElement | null;
 const loginPassword: FormElement | null = document.getElementById("login-password") as FormElement | null;
 
 // Toggle navigation
@@ -128,12 +131,13 @@ if (confirmPassword) {
 if (signUpForm) {
     signUpForm.addEventListener("submit", (e) => {
         e.preventDefault();
-        if (firstName && lastName && email && newPassword) {
+        if (firstName && lastName && email && newPassword && phoneNo) {
             const formData:SignUpForm = {
                 firstName: firstName.value,
                 lastName: lastName.value,
                 email: email.value,
-                password: newPassword.value
+                password: newPassword.value,
+                phoneNo: parseInt( phoneNo.value)
             };
             console.log(formData);
             registerUser(formData);
@@ -144,9 +148,9 @@ if (signUpForm) {
 if(loginForm) {
     loginForm.addEventListener("submit", (e)=> {
         e.preventDefault();
-        if(loginEmail && loginPassword) {
+        if(loginPhoneNo && loginPassword) {
             const formData:LoginForm = {
-                email: loginEmail.value,
+                phoneNo: parseInt(loginPhoneNo.value),
                 password: loginPassword.value
             };
             loginUser(formData);
@@ -166,6 +170,7 @@ async function registerUser(user: SignUpForm): Promise<void> {
                 lastName: user.lastName,
                 email: user.email,
                 password: user.password,
+                phoneNo: user.phoneNo
             }),
         });
 
@@ -177,7 +182,6 @@ async function registerUser(user: SignUpForm): Promise<void> {
         } else if (response.status === 200) {
             console.log("User Already Exits");
             alert("User with the same email ID already exists!");
-
         }
     } catch (error) {
         console.error(error);
@@ -192,7 +196,7 @@ async function loginUser(user: LoginForm): Promise<void> {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify( {
-                email: user.email,
+                phoneNo: user.phoneNo,
                 password: user.password
             } ),
         });
