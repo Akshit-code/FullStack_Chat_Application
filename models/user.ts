@@ -1,5 +1,7 @@
-import {DataTypes, Model, InferAttributes, InferCreationAttributes, CreationOptional } from "sequelize";
+import {DataTypes, Model, InferAttributes, InferCreationAttributes, 
+    CreationOptional, HasManyGetAssociationsMixin} from "sequelize";
 import sequelize from "../utils/database";
+import Contacts from "./contacts";
 
 class User extends Model<InferAttributes<User>, InferCreationAttributes<User>> {
     declare id: CreationOptional<string>;
@@ -8,6 +10,9 @@ class User extends Model<InferAttributes<User>, InferCreationAttributes<User>> {
     declare email: string;
     declare phoneNo: number;
     declare password: string;
+    declare createdAt: CreationOptional<Date>;
+    declare updatedAt: CreationOptional<Date>;
+    declare getContacts: HasManyGetAssociationsMixin<Contacts>;
 }
 
 User.init({
@@ -30,15 +35,23 @@ User.init({
         allowNull:false,
         validate: {
             isEmail:true
-        }
+        },
+        unique:true
     },
     phoneNo: {
         type:DataTypes.INTEGER,
-        allowNull:false
+        allowNull:false,
+        unique:true
     },
     password: {
         type:DataTypes.STRING,
         allowNull:false
+    },
+    createdAt:{
+        type:DataTypes.DATE
+    },
+    updatedAt:{
+        type: DataTypes.DATE
     },
 }, {
     sequelize,
@@ -46,4 +59,7 @@ User.init({
     modelName: "User",
 });
 
+
+User.hasMany(Contacts);
+Contacts.belongsTo(User);
 export default User;

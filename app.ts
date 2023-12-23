@@ -17,9 +17,14 @@ dotenv.config();
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use("/user", router);
+app.use("/chats", router);
+app.use("/chats" , (_req: Request, res: Response, _next: NextFunction) => {
+    res.sendFile(path.join(__dirname, 'views', 'chats.html'));
+});
+
 app.use("/" , (_req: Request, res: Response, _next: NextFunction) => {
     res.sendFile(path.join(__dirname, 'views', 'index.html'));
-})
+});
 
 sequelize.sync().then( () => {
     const port: number = parseInt(process.env.PORT || '3000');
