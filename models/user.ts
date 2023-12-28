@@ -1,7 +1,8 @@
 import {DataTypes, Model, InferAttributes, InferCreationAttributes, 
-    CreationOptional, HasManyGetAssociationsMixin} from "sequelize";
+    CreationOptional} from "sequelize";
 import sequelize from "../utils/database";
 import Contacts from "./contacts";
+import Groups from "./groups";
 
 class User extends Model<InferAttributes<User>, InferCreationAttributes<User>> {
     declare id: CreationOptional<string>;
@@ -12,7 +13,6 @@ class User extends Model<InferAttributes<User>, InferCreationAttributes<User>> {
     declare password: string;
     declare createdAt: CreationOptional<Date>;
     declare updatedAt: CreationOptional<Date>;
-    declare getContacts: HasManyGetAssociationsMixin<Contacts>;
 }
 
 User.init({
@@ -62,4 +62,8 @@ User.init({
 
 User.hasMany(Contacts);
 Contacts.belongsTo(User);
+
+User.hasMany(Groups);
+Groups.belongsTo(User);
+
 export default User;

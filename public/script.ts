@@ -1,3 +1,5 @@
+
+
 const topNav: HTMLDivElement | null = document.getElementById("myTopnav") as HTMLDivElement | null;
 const icon: HTMLElement | null = document.querySelector(".icon");
 const closeSpans: NodeListOf<Element> = document.querySelectorAll(".close");
@@ -32,6 +34,12 @@ const addContactForm:HTMLFormElement | null = document.getElementById("addContac
 const contactFirstName:FormElement | null = document.getElementById("contactFirstName") as FormElement | null;
 const contactLastName:FormElement | null = document.getElementById("contactLastName") as FormElement | null;
 const contactPhoneNo:FormElement |null = document.getElementById("contactPhoneNo") as FormElement |null;
+
+const addGroupDiv:HTMLDivElement | null = document.getElementById("addGroupDiv") as HTMLDivElement | null;
+const addGroupForm:HTMLFormElement | null = document.getElementById("addGroupForm") as HTMLFormElement | null;
+const groupName: FormElement | null = document.getElementById("groupName") as FormElement | null;
+const addGroupBtn: HTMLButtonElement | null = document.getElementById("createGroup-btn") as HTMLButtonElement | null;
+const groupSubmitBtn:HTMLButtonElement | null = document.getElementById("Group-Submit-Btn") as HTMLButtonElement | null;
 
 const chatsSectionDiv:HTMLDivElement | null = document.getElementById("chatsSectionDiv") as HTMLDivElement | null;
 const myChatsNavBtn:HTMLButtonElement | null = document.getElementById("myChats") as HTMLButtonElement | null;
@@ -78,13 +86,31 @@ interface ContactDetails {
     lastName: string;
     phoneNo: number;
     contactId: string;
+    UserId: string;
+}
+
+interface GroupDetails {
+    groupName: string;
+    GroupId: string;
+    isAdmin: boolean;
+}
+
+
+interface Message {
+    id: string;
+    message: string;
+    senderId: string;
+    receiverId: string;
+    messageType: string;
+    createdAt: string;
+    updatedAt: string;
 }
 
 // Toggle navigation
 function toggleNav(): void {
     if (topNav) {
         topNav.classList.toggle("responsive");
-    }
+    };
 }
 
 // Close modals
@@ -108,17 +134,20 @@ if (window) {
             if (event.target === modal) {
                 if (signUpDiv) {
                     signUpDiv.style.display = "none";
-                }
+                };
                 if (loginDiv) {
                     loginDiv.style.display = "none";
-                }
+                };
                 if (profileDiv) {
                     profileDiv.style.display = "none"
-                }
+                };
                 if(addContactDiv) {
-                    addContactDiv.style.display ="none";
-                }
-            }
+                    addContactDiv.style.display = "none";
+                };
+                if(addGroupDiv) {
+                    addGroupDiv.style.display = "none";
+                };
+            };
         });
     };
 }
@@ -135,7 +164,7 @@ if (signUpBtn) {
     signUpBtn.addEventListener("click", () => {
         if (signUpDiv) {
             signUpDiv.style.display = "block";
-        }
+        };
     });
 }
 
@@ -151,16 +180,29 @@ if(profileBtn) {
     profileBtn.addEventListener("click", () => {
         if(profileDiv) {
             profileDiv.style.display="block";
-        }
-    })
+        };
+    });
 }
 
 if(addContactBtn) {
     addContactBtn.addEventListener("click", ()=> {
         if(addContactDiv) {
             addContactDiv.style.display="block";
-        }
-    })
+        };
+    });
+}
+
+
+if(addGroupBtn) {
+    addGroupBtn.addEventListener("click", ()=> {
+        if(addGroupDiv) {
+            addGroupDiv.style.display = "block";
+        };
+        const contactList = generateContactList(allContacts);
+        if(addGroupForm) {
+            addGroupForm.insertBefore(contactList, groupSubmitBtn);
+        };  
+    });
 }
 
 if(logoutBtn) {
@@ -174,7 +216,7 @@ if(logoutBtn) {
 function signUpFormValidation(): void {
     if (newPassword && confirmPassword && signUpSubmitBtn) {
         signUpSubmitBtn.disabled = !(newPassword.value.trim() !== '' && confirmPassword.value.trim() !== '' && newPassword.value === confirmPassword.value);
-    }
+    };
 }
 
 if (newPassword) {
@@ -197,7 +239,7 @@ if (signUpForm) {
                 phoneNo: parseInt( phoneNo.value)
             };
             registerUser(formData);
-        }
+        };
     });
 }
 
@@ -211,7 +253,7 @@ if(loginForm) {
             };
             loginUser(formData);
         };
-    })
+    });
 }
 
 if(addContactForm) {
@@ -225,7 +267,21 @@ if(addContactForm) {
             }
             addContact(formData);
         }
-    })
+    });
+}
+
+if(addGroupForm ) {
+    addGroupForm.addEventListener("submit", (e)=> {
+        e.preventDefault();
+        const selectedUsers = Array.from(document.querySelectorAll('input[name="selectedUsers"]:checked')).map((checkbox:any)=> checkbox.value);
+        console.log("Selected Users:", selectedUsers);
+        if(groupName) {
+            addGroup(selectedUsers, groupName.value);
+        };
+        if(addGroupDiv) {
+            addGroupDiv.style.display = "none";
+        };
+    });
 }
 
 window.addEventListener("load", async ()=> {
@@ -235,9 +291,12 @@ window.addEventListener("load", async ()=> {
         return;
     } else {
         await getCurrentUserDetails();
-        await getAllContacts();
-    }
-});
+        await getAllContacts()
+        await getAllGroups();
+        await getAllPrivateMessages();
+        await getAllGroupMessages();
+    };
+})
 
 
 function openNav() {
@@ -247,7 +306,7 @@ function openNav() {
     if (sidepanel && mainContent) {
       sidepanel.style.width = "250px";
       mainContent.style.marginLeft = "250px";
-    }
+    };
   }
   
 function closeNav() {
@@ -256,7 +315,7 @@ function closeNav() {
     if (sidepanel && mainContent) {
         sidepanel.style.width = "0";
         mainContent.style.marginLeft = "0";
-    }
+    };
 }
 
 document.getElementById("openBtn")?.addEventListener("click", openNav);
@@ -300,8 +359,8 @@ if(myContactsNavBtn) {
         if(tableDiv && chatsSectionDiv) {
             tableDiv.style.display = "block";
             chatsSectionDiv.style.display="none";
-        }
-    })
+        };
+    });
 }
 
 if(myChatsNavBtn) {
@@ -309,16 +368,40 @@ if(myChatsNavBtn) {
         if(tableDiv && chatsSectionDiv) {
             tableDiv.style.display = "none";
             chatsSectionDiv.style.display="block";
-        }
-    })
+        };
+    });
 }
 
-function tableBody(contacts:ContactDetails[]) {
+function tableBody(contacts:ContactDetails[]):void {
     const tableBody = document.querySelector('#contactTable tbody');
     if (tableBody) {
         contacts.forEach(contact => {
           const row = createContactRow(contact);
           tableBody.appendChild(row);
         });
-    }
+    };
 }
+
+function generateContactList(contacts: ContactDetails[]) {
+    const contactListDiv = document.createElement("div");
+    contactListDiv.classList.add("contact-list");
+
+    contacts.forEach( (contact)=> {
+        const contactLabel = document.createElement("label");
+        contactLabel.htmlFor = `${contact.contactId}`;
+
+        const contactCheckBox = document.createElement("input");
+        contactCheckBox.type = "checkbox";
+        contactCheckBox.id = `${contact.contactId}`;
+        contactCheckBox.name = "selectedUsers";
+        contactCheckBox.value = contact.contactId;
+
+        const contactName = document.createTextNode(`${contact.firstName} ${contact.lastName}`);
+
+        contactLabel.appendChild(contactCheckBox);
+        contactLabel.appendChild(contactName);
+        contactListDiv.appendChild(contactLabel);
+    } );
+    return contactListDiv;
+}
+

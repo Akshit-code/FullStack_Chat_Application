@@ -15,6 +15,11 @@ app.use(bodyParser.urlencoded( {extended:true} ));
 app.use(express.json());
 dotenv.config();
 app.use(express.static(path.join(__dirname, 'public')));
+app.use('/socket.io', function(_req, res, next) {
+    res.header('Content-Type', 'text/javascript');
+    next();
+}, express.static(__dirname + '/node_modules/socket.io/client-dist'));
+
 
 app.use("/user", router);
 app.use("/chats", router);

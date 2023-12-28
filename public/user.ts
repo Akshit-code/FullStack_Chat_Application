@@ -1,3 +1,5 @@
+
+
 async function registerUser(user: SignUpForm): Promise<void> {
     try {
         const response:Response = await fetch('/user/register', {
@@ -52,6 +54,7 @@ async function loginUser(user: LoginForm): Promise<void> {
                 loginDiv.style.display = "none";
             };
             window.location.href = "/chats";
+            getAllContacts();
         } else if(response.status === 401) {
             console.log("Incorrect Password");
             alert("Incorrect Phone Number or password");
@@ -87,6 +90,7 @@ async function logoutuser() {
         console.error( "Error in fetching LogOut Requestr", error);
     }
 }
+let currentUser:UserDetails;
 async function getCurrentUserDetails():Promise<void> {
     try {
         const token = localStorage.getItem("token") || '';
@@ -101,7 +105,8 @@ async function getCurrentUserDetails():Promise<void> {
         if(response.status === 200) {
             const data:UserDetails = await response.json();
             data.token = token;
-            console.log("Successfully fetced current User details");
+            currentUser = data;
+            console.log("Successfully fetched current User details");
         } else if (response.status === 401 || 403) {
             console.log("Unauthorized User");
         } else if( response.status === 404) {
@@ -143,7 +148,38 @@ async function addContact(contact:ContactDetailsForn):Promise<void> {
     }
 }
 
-let contacts:ContactDetails[];
+async function addGroup(selectedUsers: any[], groupName:string) {
+    try {
+        const token = localStorage.getItem("token") || '';
+        const response = await fetch('/chats/addGroup', {
+            method:'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify ( {
+                groupName: groupName,
+                groupMembers: selectedUsers,
+            } )
+        });
+
+        if(response.status === 201) {
+            const data =  await response.json();
+            console.log(data);
+            console.log("Added New Group");
+            // displayGroupCard(data);
+        } else if (response.status === 401 || 403) {
+            console.log("Unauthorized User");
+        } else {
+            console.log(`Error: ${response.statusText}`);
+        }
+
+    } catch (error) {
+        console.log("Error in fetching Add group ", error);
+    }
+}
+
+let allContacts:ContactDetails[];
 async function getAllContacts():Promise<void> {
     try {
         const token = localStorage.getItem("token") || '';
@@ -156,10 +192,10 @@ async function getAllContacts():Promise<void> {
         });
 
         if(response.status === 200) {
-            const data:[] = await response.json();
-            contacts = data;
-            tableBody(contacts);
-            contacts.forEach( (contact)=> {
+            const data = await response.json();
+            allContacts = data;
+            tableBody(allContacts);
+            allContacts.forEach( (contact)=> {
                 displayContactCard(contact);
             });
             console.log("Fetched sucessfully Users all contacts details");
@@ -171,6 +207,38 @@ async function getAllContacts():Promise<void> {
             console.log(`Error: ${response.statusText}`);
         }
     } catch(error) {
-        console.error("Error in fetching User Details",error);
+        console.error("Error in fetching User all contact Details",error);
+    }
+}
+
+let allGroups:GroupDetails[];
+async function getAllGroups():Promise<void> {
+    try {
+        const token = localStorage.getItem("token") || '';
+        const response:Response = await fetch('/chats/getAllGroups', {
+            method:"GET",
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+        });
+
+        if(response.status === 200) {
+            const data:[] = await response.json();
+            allGroups = data;
+            console.log("ALL GROUP DATA => ", allGroups);
+            allGroups.forEach( group=> {
+                displayGroupCard(group);
+            });
+            console.log("Fetched sucessfully Users all groups details");
+        } else if (response.status === 401 || 403) {
+            console.log("Unauthorized User");
+        } else if( response.status === 404) {
+            console.log("User Details not Found");
+        } else {
+            console.log(`Error: ${response.statusText}`);
+        }
+    } catch(error) {
+        console.error("Error in fetching All groups Details",error);
     }
 }

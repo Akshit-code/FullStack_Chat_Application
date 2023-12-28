@@ -1,6 +1,6 @@
 body {
   background-color: lightgray;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 }
 
 h1 {
@@ -8,105 +8,102 @@ h1 {
 }
 
 .topnav {
-background-color: #333;
-overflow: hidden;
+  background-color: #333;
+  overflow: hidden;
 }
 
 .topnav a {
-float: left;
-display: block;
-color: #f2f2f2;
-text-align: center;
-padding: 14px 16px;
-text-decoration: none;
-font-size: 17px;
+  float: left;
+  display: block;
+  color: #f2f2f2;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+  font-size: 17px;
 }
 
 .topnav a:hover {
-background-color: #ddd;
-color: black;
+  background-color: #ddd;
+  color: black;
 }
 
 .topnav a.active {
-background-color: #04AA6D;
-color: white;
+  background-color: #04aa6d;
+  color: white;
 }
 
 .topnav-right button {
-float: right;
-cursor: pointer;
-border: 0;
-border-radius: 4px;
-font-weight: 600;
-margin: 0 10px;
-margin-top: 7px;
-margin-bottom: 3px;
-width: 100px;
-padding: 10px 0;
-box-shadow: 0 0 20px rgba(104, 85, 224, 0.2);
-transition: 0.4s;
+  float: right;
+  cursor: pointer;
+  border: 0;
+  border-radius: 4px;
+  font-weight: 600;
+  margin: 0 10px;
+  margin-top: 7px;
+  margin-bottom: 3px;
+  width: 100px;
+  padding: 10px 0;
+  box-shadow: 0 0 20px rgba(104, 85, 224, 0.2);
+  transition: 0.4s;
 }
 
 .topnav-right button:hover {
-color: white;
-box-shadow: 0 0 20px rgba(104, 85, 224, 0.6);
-background-color: rgba(104, 85, 224, 1);
+  color: white;
+  box-shadow: 0 0 20px rgba(104, 85, 224, 0.6);
+  background-color: rgba(104, 85, 224, 1);
 }
 
-
 .topnav-center button {
-float:left;
-cursor: pointer;
-border: 0;
-border-radius: 4px;
-font-weight: 600;
-margin: 0 10px;
-margin-top: 7px;
-margin-bottom: 3px;
-width: 150px;
-padding: 10px 0;
-box-shadow: 0 0 20px rgba(104, 85, 224, 0.2);
-transition: 0.4s;
+  float: left;
+  cursor: pointer;
+  border: 0;
+  border-radius: 4px;
+  font-weight: 600;
+  margin: 0 10px;
+  margin-top: 7px;
+  margin-bottom: 3px;
+  width: 150px;
+  padding: 10px 0;
+  box-shadow: 0 0 20px rgba(104, 85, 224, 0.2);
+  transition: 0.4s;
 }
 
 .topnav-center button:hover {
-color: white;
-box-shadow: 0 0 20px rgba(104, 85, 224, 0.6);
-background-color: rgba(104, 85, 224, 1);
+  color: white;
+  box-shadow: 0 0 20px rgba(104, 85, 224, 0.6);
+  background-color: rgba(104, 85, 224, 1);
 }
 
-
 .topnav-left button {
-float: left;
-cursor: pointer;
-border: 0;
-border-radius: 4px;
-font-weight: 600;
-margin: 0 10px;
-margin-top: 7px;
-margin-bottom: 3px;
-width: 100px;
-padding: 10px 0;
-box-shadow: 0 0 20px rgba(104, 85, 224, 0.2);
-transition: 0.4s;
+  float: left;
+  cursor: pointer;
+  border: 0;
+  border-radius: 4px;
+  font-weight: 600;
+  margin: 0 10px;
+  margin-top: 7px;
+  margin-bottom: 3px;
+  width: 100px;
+  padding: 10px 0;
+  box-shadow: 0 0 20px rgba(104, 85, 224, 0.2);
+  transition: 0.4s;
 }
 
 .topnav-left button:hover {
-color: white;
-box-shadow: 0 0 20px rgba(104, 85, 224, 0.6);
-background-color: rgba(104, 85, 224, 1);
+  color: white;
+  box-shadow: 0 0 20px rgba(104, 85, 224, 0.6);
+  background-color: rgba(104, 85, 224, 1);
 }
 
-
 .reg {
-color: white;
-background-color: rgba(104, 85, 224, 1);
+  color: white;
+  background-color: rgba(104, 85, 224, 1);
 }
 
 .log {
-color: rgb(104, 85, 224);
-background-color: rgba(255, 255, 255, 1);
-border: 1px solid rgba(104, 85, 224, 1);
+  color: rgb(104, 85, 224);
+  background-color: rgba(255, 255, 255, 1);
+  border: 1px solid rgba(104, 85, 224, 1);
 }
 
 .topnav .icon {
@@ -114,453 +111,487 @@ border: 1px solid rgba(104, 85, 224, 1);
 }
 
 .topnav p {
-float: left;
-display: block;
-color: #f2f2f2;
-text-align: center;
-text-decoration: none;
-font-size: larger;
-font-weight: bold;
-margin-left: 2%;
+  float: left;
+  display: block;
+  color: #f2f2f2;
+  text-align: center;
+  text-decoration: none;
+  font-size: larger;
+  font-weight: bold;
+  margin-left: 2%;
 }
 
 .topnav p:hover {
-background-color: #ddd;
-color: black;
-cursor: pointer;
+  background-color: #ddd;
+  color: black;
+  cursor: pointer;
 }
-
-
 
 /* When the screen is less than 600 pixels wide, hide all links, except for the first one ("Home"). Show the link that contains should open and close the topnav (.icon) */
 @media screen and (max-width: 600px) {
-.topnav a {display: none;}
-.topnav a.icon {
-  float: right;
-  display: block;
-}
-.topnav-left a {
-  display: block;
-}
-.topnav-right button {
-  display: none;
-}
-.topnav p {
-  display: none;
-}
-.topnav-left button {
-  display: block;
-}
-.topnav button {
-  display:none
-}
+  .topnav a {
+    display: none;
+  }
+  .topnav a.icon {
+    float: right;
+    display: block;
+  }
+  .topnav-left a {
+    display: block;
+  }
+  .topnav-right button {
+    display: none;
+  }
+  .topnav p {
+    display: none;
+  }
+  .topnav-left button {
+    display: block;
+  }
+  .topnav button {
+    display: none;
+  }
 }
 
 /* The "responsive" class is added to the topnav with JavaScript when the user clicks on the icon. This class makes the topnav look good on small screens (display the links vertically instead of horizontally) */
 @media screen and (max-width: 600px) {
-.topnav.responsive {position: relative;}
-.topnav.responsive a.icon {
+  .topnav.responsive {
+    position: relative;
+  }
+  .topnav.responsive a.icon {
     position: absolute;
     right: 0;
     top: 0;
-}
-.topnav.responsive a {
+  }
+  .topnav.responsive a {
     float: none;
     display: block;
     text-align: left;
-}
-.topnav p {
-  float: none;
-  display: none;
-}
+  }
+  .topnav p {
+    float: none;
+    display: none;
+  }
 
+  .topnav-left button {
+    display: block;
+    float: left;
+    padding: 1%;
+    margin: 2%;
+  }
 
-.topnav-left button {
-  display: block;
-  float: left;
-  padding: 1%;
-  margin: 2%;
+  .topnav.responsive button {
+    display: block;
+    float: left;
+    padding: 1%;
+    margin: 2%;
+  }
 }
-
-.topnav.responsive button {
-  display: block;
-  float: left;
-  padding: 1%;
-  margin: 2%;
-}
-}
-
 
 #signup-form-div {
-  margin:0 auto;
+  margin: 0 auto;
 }
 
 #login-form-div {
-  margin:0 auto;
+  margin: 0 auto;
 }
 
 form {
-display: flex;
-flex-direction: column;
-gap: 10px;
-max-width:fit-content;
-background-color: #fff;
-padding: 20px;
-border-radius: 20px;
-position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-width: fit-content;
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 20px;
+  position: relative;
 }
 
 .title {
-font-size: 28px;
-color: royalblue;
-font-weight: 600;
-letter-spacing: -1px;
-position: relative;
-display: flex;
-align-items: center;
-padding-left: 30px;
+  font-size: 28px;
+  color: royalblue;
+  font-weight: 600;
+  letter-spacing: -1px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  padding-left: 30px;
 }
 
-.title::before,.title::after {
-position: absolute;
-content: "";
-height: 16px;
-width: 16px;
-border-radius: 50%;
-left: 0px;
-background-color: royalblue;
+.title::before,
+.title::after {
+  position: absolute;
+  content: "";
+  height: 16px;
+  width: 16px;
+  border-radius: 50%;
+  left: 0px;
+  background-color: royalblue;
 }
 
 .title::before {
-width: 18px;
-height: 18px;
-background-color: royalblue;
+  width: 18px;
+  height: 18px;
+  background-color: royalblue;
 }
 
 .title::after {
-width: 18px;
-height: 18px;
-animation: pulse 1s linear infinite;
+  width: 18px;
+  height: 18px;
+  animation: pulse 1s linear infinite;
 }
 
-.message, .signin {
-color: rgba(88, 87, 87, 0.822);
-font-size: 14px;
+.message,
+.signin {
+  color: rgba(88, 87, 87, 0.822);
+  font-size: 14px;
 }
 
 .signin {
-text-align: center;
+  text-align: center;
 }
 
 .signin a {
-color: royalblue;
+  color: royalblue;
 }
 
 .signin a:hover {
-text-decoration: underline royalblue;
+  text-decoration: underline royalblue;
 }
 
 .flex {
-display: flex;
-width: 100%;
-gap: 6px;
+  display: flex;
+  width: 100%;
+  gap: 6px;
 }
 
 .form label {
-position: relative;
+  position: relative;
 }
 
 .form label .input {
-width: 100%;
-padding: 10px 10px 20px 10px;
-outline: 0;
-border: 1px solid rgba(105, 105, 105, 0.397);
-border-radius: 10px;
+  width: 100%;
+  padding: 10px 10px 20px 10px;
+  outline: 0;
+  border: 1px solid rgba(105, 105, 105, 0.397);
+  border-radius: 10px;
 }
 
 .form label .input + span {
-position: absolute;
-left: 10px;
-top: 15px;
-color: grey;
-font-size: 0.9em;
-cursor: text;
-transition: 0.3s ease;
+  position: absolute;
+  left: 10px;
+  top: 15px;
+  color: grey;
+  font-size: 0.9em;
+  cursor: text;
+  transition: 0.3s ease;
 }
 
 .form label .input:placeholder-shown + span {
-top: 15px;
-font-size: 0.9em;
+  top: 15px;
+  font-size: 0.9em;
 }
 
-.form label .input:focus + span,.form label .input:valid + span {
-top: 30px;
-font-size: 0.7em;
-font-weight: 600;
+.form label .input:focus + span,
+.form label .input:valid + span {
+  top: 30px;
+  font-size: 0.7em;
+  font-weight: 600;
 }
 
 .form label .input:valid + span {
-color: green;
+  color: green;
 }
 
 .submit {
-border: none;
-outline: none;
-background-color: royalblue;
-padding: 10px;
-border-radius: 10px;
-color: #fff;
-font-size: 16px;
-transform: .3s ease;
+  border: none;
+  outline: none;
+  background-color: royalblue;
+  padding: 10px;
+  border-radius: 10px;
+  color: #fff;
+  font-size: 16px;
+  transform: 0.3s ease;
 }
 
 .submit:hover {
-background-color: rgb(56, 90, 194);
+  background-color: rgb(56, 90, 194);
 }
 
 .submit:disabled {
-background-color: lightgrey;
+  background-color: lightgrey;
 }
 
 .forgot {
-border: none;
-outline: none;
-background-color: royalblue;
-padding: 10px;
-border-radius: 10px;
-color: #fff;
-font-size: 16px;
-transform: .3s ease;
+  border: none;
+  outline: none;
+  background-color: royalblue;
+  padding: 10px;
+  border-radius: 10px;
+  color: #fff;
+  font-size: 16px;
+  transform: 0.3s ease;
 }
 
 .forgot:hover {
-background-color: rgb(56, 90, 194);
+  background-color: rgb(56, 90, 194);
 }
 
 @keyframes pulse {
-from {
-  transform: scale(0.9);
-  opacity: 1;
-} to {
-  ransform: scale(1.8);
-  opacity: 0;
-}
+  from {
+    transform: scale(0.9);
+    opacity: 1;
+  }
+  to {
+    ransform: scale(1.8);
+    opacity: 0;
+  }
 }
 
 /* Modal css  */
 
 .modal {
-display: none; /* Hidden by default */
-position: fixed; /* Stay in place */
-z-index: 1; /* Sit on top */
-left: 0;
-top: 0;
-width: 100%; /* Full width */
-height: 100%; /* Full height */
-overflow: auto; /* Enable scroll if needed */
-background-color: rgb(0,0,0); /* Fallback color */
-background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+  display: none; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 1; /* Sit on top */
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgb(0, 0, 0); /* Fallback color */
+  background-color: rgba(0, 0, 0, 0.4); /* Black w/ opacity */
 }
 
 /* Modal Content/Box */
 .modal-content {
-background-color: #fefefe;
-margin: 15% auto; /* 15% from the top and centered */
-padding: 20px;
-border: 1px solid #888;
-width: fit-content; /* Could be more or less, depending on screen size */
+  background-color: #fefefe;
+  margin: 15% auto; /* 15% from the top and centered */
+  padding: 20px;
+  border: 1px solid #888;
+  width: fit-content; /* Could be more or less, depending on screen size */
 }
 
 /* The Close Button */
 .close {
-color: #aaa;
-float: right;
-font-size: 28px;
-font-weight: bold;
-} 
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
 
 .close:hover,
 .close:focus {
-color: black;
-text-decoration: none;
-cursor: pointer;
+  color: black;
+  text-decoration: none;
+  cursor: pointer;
 }
 
 .card .img {
-width: 70px;
-height: 70px;
-background: #e8e8e8;
-border-radius: 100%;
-margin: auto;
-margin-top: 20px;
+  width: 70px;
+  height: 70px;
+  background: #e8e8e8;
+  border-radius: 100%;
+  margin: auto;
+  margin-top: 20px;
 }
-
 
 /* Basic styles for the side panel */
 .container {
-display: flex;
+  display: flex;
 }
 
 .sidepanel {
-height: 100%;
-width: 0;
-position: fixed;
-top: 0;
-left: 0;
-background-color: #111;
-overflow-x: hidden;
-transition: 0.5s;
-padding-top: 60px;
-z-index: 1;
+  height: 100%;
+  width: 0;
+  position: fixed;
+  top: 0;
+  left: 0;
+  background-color: #111;
+  overflow-x: hidden;
+  transition: 0.5s;
+  padding-top: 60px;
+  z-index: 1;
 }
 
 .sidepanel nav ul {
-list-style-type: none;
-padding: 0;
-margin: 0;
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
 }
 
 .sidepanel nav ul li {
-padding: 10px;
+  padding: 10px;
 }
 
 .sidepanel nav ul li a {
-color: white;
-text-decoration: none;
+  color: white;
+  text-decoration: none;
 }
 
 .openBtn {
-padding: 10px 15px;
-color: rgb(104, 85, 224);
-background-color: rgba(255, 255, 255, 1);
-border: 1px solid rgba(104, 85, 224, 1);
-cursor: pointer;
-height: fit-content;
-width: fit-content;
+  padding: 10px 15px;
+  color: rgb(104, 85, 224);
+  background-color: rgba(255, 255, 255, 1);
+  border: 1px solid rgba(104, 85, 224, 1);
+  cursor: pointer;
+  height: fit-content;
+  width: fit-content;
 }
 
 .closeBtn {
-position: absolute;
-top: 0;
-right: 25px;
-font-size: 36px;
-margin-left: 50px;
-cursor: pointer;
-color: white;
-border: none;
-background: none;
+  position: absolute;
+  top: 0;
+  right: 25px;
+  font-size: 36px;
+  margin-left: 50px;
+  cursor: pointer;
+  color: white;
+  border: none;
+  background: none;
 }
 .closeBtn:focus {
-outline: none;
+  outline: none;
 }
 
 .main-content {
-flex: 1;
-padding: 20px;
-transition: margin-left 0.5s;
+  flex: 1;
+  padding: 20px;
+  transition: margin-left 0.5s;
 }
 
 @media screen and (max-height: 450px) {
-.sidepanel {padding-top: 15px;}
-.sidepanel nav ul li {font-size: 18px;}
+  .sidepanel {
+    padding-top: 15px;
+  }
+  .sidepanel nav ul li {
+    font-size: 18px;
+  }
 }
-
 
 /* Basic styles for the table */
 .table-container {
-max-width: 800px;
-margin: 0 auto;
-padding: 20px;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
 }
 
 table {
-width: 100%;
-border-collapse: collapse;
+  width: 100%;
+  border-collapse: collapse;
 }
 
-th, td {
-border: 1px solid #ddd;
-padding: 8px;
+th,
+td {
+  border: 1px solid #ddd;
+  padding: 8px;
 }
 
 th {
-background-color: #f2f2f2;
-text-align: left;
+  background-color: #f2f2f2;
+  text-align: left;
 }
 
 button {
-padding: 6px 10px;
-margin-right: 5px;
+  padding: 6px 10px;
+  margin-right: 5px;
 }
-
 
 /* Basic styles for layout */
 .Chatscontainer {
-display: flex;
-height: 100vh;
+  display: flex;
+  height: 100vh;
 }
 
 .chats-sidebar {
-flex: 0 0 250px;
-background-color: #f2f2f2;
-/* Styles for sidebar content */
+  flex: 0 0 250px;
+  background-color: #f2f2f2;
+  /* Styles for sidebar content */
 }
 
 .chat {
-flex: 1;
-display: flex;
-flex-direction: column;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
 }
 
 .chats-header {
-background-color: #ebebeb;
-padding: 10px;
-/* Styles for header content */
+  background-color: #ebebeb;
+  padding: 10px;
+  /* Styles for header content */
 }
 
 .chats-messages {
-flex: 1;
-overflow-y: auto;
-/* Styles for messages */
+  flex: 1;
+  overflow-y: auto;
+  /* Styles for messages */
 }
 
 .compose {
-display: flex;
-align-items: center;
-padding: 10px;
-/* Styles for compose section */
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  /* Styles for compose section */
 }
 
 .compose input[type="text"] {
-flex: 1;
-padding: 8px;
-margin-right: 10px;
-border-radius: 5px;
-border: 1px solid #ccc;
+  flex: 1;
+  padding: 8px;
+  margin-right: 10px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
 }
 
 .compose .send-btn {
-padding: 8px 15px;
-background-color: #25d366;
-color: white;
-border: none;
-border-radius: 5px;
-cursor: pointer;
+  padding: 8px 15px;
+  background-color: #25d366;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
 }
 
 .attachment-btn {
-padding: 8px;
-background-color: #25d366;
-color: white;
-border-radius: 50%;
-cursor: pointer;
+  padding: 8px;
+  background-color: #25d366;
+  color: white;
+  border-radius: 50%;
+  cursor: pointer;
 }
 
 .contact-card {
-padding: 8px;
-cursor: pointer;
+  padding: 8px;
+  cursor: pointer;
 }
 
 .contact-card:hover {
-background-color: #e0e0e0;
+  background-color: #e0e0e0;
+}
+
+.message-container {
+  border: 2px solid #dedede;
+  background-color: #f1f1f1;
+  border-radius: 5px;
+  padding: 10px;
+  padding-left: 10px;
+  padding-right: 10px;
+  margin: 10px 0;
+}
+
+.message-container::after {
+  content: "";
+  clear: both;
+  display: table;
+}
+
+.send {
+  border-color: #ccc;
+  background-color: #ddd;
+  display: block;
+  text-align: right;
+}
+.received {
+  border: #dedede;
+  background-color: lightgreen;
+  display: block;
 }
