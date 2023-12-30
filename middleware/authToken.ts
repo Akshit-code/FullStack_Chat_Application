@@ -14,7 +14,6 @@ const authToken = async (req:Request, res:Response, next:NextFunction) => {
         token = token.split(' ')[1];
         try {
             const decode:DecodeToken = jsonwebtoken.verify(token, secretKey) as DecodeToken;
-            console.log(decode);
             if(decode && decode.id) {
                 req.body.id = decode.id;
                 req.body.UserId = decode.id;

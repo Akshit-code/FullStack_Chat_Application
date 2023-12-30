@@ -194,8 +194,13 @@ export const addContact = async (req:AddContactRequest, res:Response, _next:Next
                     UserId: isExistingUser.id
                 }
                 await Contacts.create( user, {transaction});
+                await transaction.commit();
+                console.log(`User ${userData?.firstName} ${userData?.lastName} Have been Added to Contacts`);
+            } else {
+                await transaction.rollback();
+                res.status(404).json(( {message: "Failed to add contact "}));
             }
-            await transaction.commit();
+            
             return res.status(201).json(result);
         }
     } catch (error) {
@@ -207,10 +212,10 @@ export const addContact = async (req:AddContactRequest, res:Response, _next:Next
 
 export const getAllContacts = async (req:GetAllContactsRequest, res:Response, _next:NextFunction) => {
     let transaction = await sequelize.transaction();
-    console.log(req.body);
     try {
         const contacts = await Contacts.findAll({where: {$UserId$: req.body.UserId} , transaction});
         transaction.commit();
+        console.log("Fetched all contacts successfully")
         return res.status(200).json(contacts);
     } catch (error) {
         console.error(error);
@@ -226,7 +231,6 @@ export const addGroup = async  (req:addGroupRequest, res:Response, _next:NextFun
             groupName: req.body.groupName,
             UserId: req.body.UserId
         }, {transaction});
-        console.log("GroupId =>", group.id);
         const groupMembers = req.body.groupMembers;
         const groupMembersPromises = groupMembers.map(async (memberId: string) => {
             await GroupMembers.create({
@@ -238,7 +242,7 @@ export const addGroup = async  (req:addGroupRequest, res:Response, _next:NextFun
 
         await Promise.all(groupMembersPromises);
         transaction.commit();
-       
+        console.log(`Added group: ${req.body.groupName}`);
         return res.status(201).json(group);
     } catch (error) {
         console.error(error);
@@ -259,6 +263,7 @@ export const getAllGroups = async  (req:GetAllGroupsRequest, res: Response, _nex
 
         const responseData = [...adminGroupsModified, ...membersGroupsModified];
         transaction.commit();
+        console.log("Fetched all Groups successfully")
         return res.status(200).json(responseData);
     } catch (error) {
         console.error(error);

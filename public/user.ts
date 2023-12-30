@@ -1,5 +1,3 @@
-
-
 async function registerUser(user: SignUpForm): Promise<void> {
     try {
         const response:Response = await fetch('/user/register', {
@@ -32,7 +30,7 @@ async function registerUser(user: SignUpForm): Promise<void> {
     }
 }
 
-
+let isloggedIn: boolean = false;
 async function loginUser(user: LoginForm): Promise<void> {
     try {
         const response: Response = await fetch ('user/login', {
@@ -54,7 +52,7 @@ async function loginUser(user: LoginForm): Promise<void> {
                 loginDiv.style.display = "none";
             };
             window.location.href = "/chats";
-            getAllContacts();
+            isloggedIn =true;
         } else if(response.status === 401) {
             console.log("Incorrect Password");
             alert("Incorrect Phone Number or password");
@@ -80,6 +78,7 @@ async function logoutuser() {
             },
         });
         if(response.status === 201) {
+            localStorage.clear();
             console.log("User Have Logged Out");
         } else if(response.status === 404) {
             console.log("User Not FOund");
@@ -164,8 +163,7 @@ async function addGroup(selectedUsers: any[], groupName:string) {
         });
 
         if(response.status === 201) {
-            const data =  await response.json();
-            console.log(data);
+            await response.json();
             console.log("Added New Group");
             // displayGroupCard(data);
         } else if (response.status === 401 || 403) {
@@ -226,7 +224,7 @@ async function getAllGroups():Promise<void> {
         if(response.status === 200) {
             const data:[] = await response.json();
             allGroups = data;
-            console.log("ALL GROUP DATA => ", allGroups);
+
             allGroups.forEach( group=> {
                 displayGroupCard(group);
             });

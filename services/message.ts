@@ -2,7 +2,6 @@ import { Request, Response, NextFunction } from "express";
 import dotenv from 'dotenv';
 import { Op } from "sequelize";
 import AWS from 'aws-sdk';
-// import multer from 'multer';
 
 import sequelize from "../utils/database";
 import { AWS_Instance } from "../config/aws";
@@ -43,7 +42,6 @@ interface getAllGroupMessageRequest extends Request {
 
 export const sendMessage = async (req: sendMessageRequest, res:Response, _next: NextFunction) => {
     let transaction = await sequelize.transaction();
-    console.log(req.body);
     try {
         const data = await Messages.create( {
             message: req.body.message,
@@ -85,8 +83,6 @@ export  const getAllPrivateMessages = async (req:getAllPrivateMessagesRequest, r
 export const getAllGroupMessages = async (req:getAllGroupMessageRequest, res:Response, _next:NextFunction) => {
     let transaction = await sequelize.transaction();
     try {
-
-        // const groupId = req.body.allGroupsId; 
         const allMessagesPrmoise =  req.body.allGroupsId.map( async (groupId) => {
             const message = await Messages.findAll( {
                 where: { $receiverId$: groupId, $messageType$: 'group' },

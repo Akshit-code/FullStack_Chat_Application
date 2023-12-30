@@ -1,5 +1,3 @@
-
-
 const topNav: HTMLDivElement | null = document.getElementById("myTopnav") as HTMLDivElement | null;
 const icon: HTMLElement | null = document.querySelector(".icon");
 const closeSpans: NodeListOf<Element> = document.querySelectorAll(".close");
@@ -284,20 +282,25 @@ if(addGroupForm ) {
     });
 }
 
+let socketFunctions: any;
 window.addEventListener("load", async ()=> {
     const token = localStorage.getItem("token") || '';
     if(!token) {
         console.log("No token Found");
         return;
     } else {
-        await getCurrentUserDetails();
-        await getAllContacts()
-        await getAllGroups();
-        await getAllPrivateMessages();
-        await getAllGroupMessages();
+        try {
+            await Promise.all( [
+                getCurrentUserDetails(),
+                getAllContacts().then( () => getAllPrivateMessages() ),
+                getAllGroups().then ( ()=> getAllGroupMessages() )
+            ] ); 
+            socketFunctions = connectToSocket();
+        } catch (error) {
+            console.error("Error occurred while loading data:", error);
+        }
     };
-})
-
+});
 
 function openNav() {
     const sidepanel = document.getElementById("sidepanel");
@@ -404,4 +407,3 @@ function generateContactList(contacts: ContactDetails[]) {
     } );
     return contactListDiv;
 }
-

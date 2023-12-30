@@ -16,7 +16,6 @@ router.get("/getCurrentUserDetails", authToken, currentUser);
 router.post("/addContact", authToken, addContact );
 router.get("/getAllContacts", authToken, getAllContacts );
 
-
 router.post("/addGroup", authToken, addGroup);
 router.get("/getAllGroups", authToken, getAllGroups);
 

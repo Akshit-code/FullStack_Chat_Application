@@ -5,57 +5,13 @@ const composeDiv: HTMLDivElement |  null = document.getElementById("compose-div"
 const personalTabBtn: HTMLButtonElement | null = document.getElementById("PersonalTab") as HTMLButtonElement | null;
 const groupTab:HTMLButtonElement | null = document.getElementById("groupTab") as HTMLButtonElement | null;
 
-
 function resetChatDisplay() {
     [chatsSideBar, chatsMessagesDiv, chatsheaderDiv, composeDiv].forEach((element) => {
         if (element) {
             element.innerHTML = '';
-        }
+        };
     });
 }
-
-// if(personalTabBtn) {
-//     personalTabBtn.addEventListener("click", ()=> {
-//         if(chatsSectionDiv) {
-//             chatsSectionDiv.style.display = "block";
-//             if(chatsSideBar) {
-//                 chatsSideBar.innerHTML = '';
-//                 getAllContacts();
-//             };
-//             if(chatsMessagesDiv) {
-//                 chatsMessagesDiv.innerHTML = '';
-//             };
-//             if(chatsheaderDiv) {
-//                 chatsheaderDiv.innerHTML = '';
-//             };
-//             if(composeDiv) {
-//                 composeDiv.innerHTML = '';
-//             }
-//         };
-//     });
-// }
-
-// if(groupTab) {
-//     groupTab.addEventListener("click", ()=> {
-//         if(chatsSectionDiv) {
-//             chatsSectionDiv.style.display = "block";
-//             if(chatsSideBar) {
-//                 chatsSideBar.innerHTML = '';
-//                 getAllGroups();
-//             };
-//             if(chatsMessagesDiv) {
-//                 chatsMessagesDiv.innerHTML = '';
-//             };
-//             if(chatsheaderDiv) {
-//                 chatsheaderDiv.innerHTML = '';
-//             };
-//             if(composeDiv) {
-//                 composeDiv.innerHTML = '';
-//             }
-//         };
-//     });
-// }
-
 
 if (personalTabBtn && groupTab) {
     personalTabBtn.addEventListener("click", () => {
@@ -75,10 +31,9 @@ function handleTabClick(isPersonal: boolean) {
         if (chatsSideBar) {
             chatsSideBar.innerHTML = '';
             isPersonal ? getAllContacts() : getAllGroups();
-        }
-    }
+        };
+    };
 }
-
 
 function createCard(_type: string, text: string, clickHandler: Function) {
     const card: HTMLDivElement | null = document.createElement("div");
@@ -90,17 +45,18 @@ function createCard(_type: string, text: string, clickHandler: Function) {
         if (paragraph) {
             paragraph.appendChild(textNode);
             card.appendChild(paragraph);
-        }
+        };
 
         card.addEventListener("click", () => {
             clickHandler();
         });
 
         chatsSideBar?.appendChild(card);
-    }
+    };
 }
 
 function displayContactCard(contact: ContactDetails) {
+    console.log(contact.contactId);
     createCard(
         "contact",
         `${contact.firstName} ${contact.lastName}`,
@@ -108,6 +64,7 @@ function displayContactCard(contact: ContactDetails) {
             displayHeaeders(contact);
             composeChats(contact);
             getPrivateChats(contact);
+            socketFunctions.createPrivateRoom(currentUser.id);
         }
     );
 }
@@ -120,12 +77,12 @@ function displayGroupCard(group: GroupDetails) {
             displayGroupHeader(group);
             composeGroupChats(group);
             getGroupChats(group);
+            socketFunctions.joinOrCreateGroupRoom(group.GroupId);
         }
     );
 }
 
 function getPrivateChats(contact:ContactDetails) {
-    // Retrieve stored messages from localStorage
     const storedMessagesRaw = localStorage.getItem("PrivateChats");
     const storedMessages: Message[] = storedMessagesRaw ? JSON.parse(storedMessagesRaw) : [];
 
@@ -134,8 +91,8 @@ function getPrivateChats(contact:ContactDetails) {
             displaySendMessage(message.message);
         } else if (message.receiverId === currentUser.id && message.senderId === contact.contactId) {
             displayReceviedMessage(message.message);
-        }
-    } )
+        };
+    } );
 }
 
 function getGroupChats(group: GroupDetails) {
@@ -147,23 +104,17 @@ function getGroupChats(group: GroupDetails) {
             displaySendMessage(message.message);
         } else if (message.receiverId === group.GroupId) {
             displayReceviedMessage(message.message);
-        }
-    } )
+        };
+    } );
 }
-
-
 
 function displayHeaeders(contact: ContactDetails) {
     if(chatsheaderDiv) {
         chatsheaderDiv.innerHTML = '';
         const headerName = contact.firstName + " "  + contact.lastName;
-        const refreshButton = document.createElement("button");
-        refreshButton.textContent= "refesh";
-        refreshButton.style.float = "right";
         const headerTextNode = document.createTextNode(headerName);
         chatsheaderDiv.style.textAlign = "center";
         chatsheaderDiv.appendChild(headerTextNode);
-        chatsheaderDiv.appendChild(refreshButton);
     };
 }
 
@@ -171,13 +122,71 @@ function displayGroupHeader(group:GroupDetails) {
     if(chatsheaderDiv) {
         chatsheaderDiv.innerHTML = '';
         const headerName = group.groupName;
-        const refreshButton = document.createElement("button");
-        refreshButton.textContent= "refesh";
-        refreshButton.style.float = "right";
-        const headerTextNode = document.createTextNode(headerName);
-        chatsheaderDiv.style.textAlign = "center";
-        chatsheaderDiv.appendChild(headerTextNode);
-        chatsheaderDiv.appendChild(refreshButton);
+        if(group.isAdmin) {
+            const editGroupBtn = document.createElement("button");
+            editGroupBtn.classList.add("reg");
+            editGroupBtn.addEventListener("click", editGroup);
+            const headerTextNode = document.createTextNode(headerName);
+            chatsheaderDiv.style.textAlign = "center";
+            chatsheaderDiv.appendChild(headerTextNode);
+        } else {
+            const headerTextNode = document.createTextNode(headerName);
+            chatsheaderDiv.style.textAlign = "center";
+            chatsheaderDiv.appendChild(headerTextNode);
+        }
+    };
+}
+
+function editGroup() {
+    const editGroupDiv = document.createElement("div");
+    editGroupDiv.classList.add("modal");
+}
+function composeChats(contact: ContactDetails) {
+    const messageInput = document.createElement("input");
+    messageInput.setAttribute("type", "text");
+    messageInput.placeholder = "Type a Message";
+
+    const fileInputBtn = document.createElement("button");
+    fileInputBtn.textContent = "+";
+    fileInputBtn.addEventListener("click", ()=> {
+        fileInput.click();
+    });
+
+    const fileInput =  document.createElement("input");
+    fileInput.setAttribute("type", "file");
+    fileInput.setAttribute("multiple", "false");
+    fileInput.style.display = "none";
+
+    fileInput.addEventListener("change", () => {
+        const selectedFile = (fileInput as HTMLInputElement).files?.[0];
+        if (selectedFile) {
+            console.log("Selected Files:", selectedFile);
+        };
+    });
+
+    const sendBtn = document.createElement("button");
+    sendBtn.classList.add("send-btn");
+    sendBtn.textContent = "Send";
+    sendBtn.addEventListener("click" , ()=> {
+        const message = messageInput.value;
+        const selectedFile = (fileInput as HTMLInputElement).files?.[0];
+
+        if(selectedFile) {
+            sendMultiMediaMessage(selectedFile, contact.contactId, 'private');
+        } else {
+            // sendMessage(message, contact.contactId, 'private');
+            socketFunctions.sendPrivatemessage(currentUser.id, contact.contactId, message);
+            displaySendMessage(message);
+        }
+        messageInput.value = '';
+    });
+
+    if(composeDiv) {
+        composeDiv.innerHTML = '';
+        composeDiv.appendChild(fileInputBtn);
+        composeDiv.appendChild(fileInput);
+        composeDiv.appendChild(messageInput);
+        composeDiv.appendChild(sendBtn);
     };
 }
 
@@ -209,19 +218,16 @@ function composeGroupChats(group: GroupDetails) {
     sendBtn.textContent = "Send";
     sendBtn.addEventListener("click" , ()=> {
         const message = currentUser.firstName + " " + currentUser.lastName + " : " +  messageInput.value;
-        console.log("Message Input : ",message);
         const selectedFile = (fileInput as HTMLInputElement).files?.[0];
-        console.log(selectedFile);
-
         if(selectedFile) {
             sendMultiMediaMessage(selectedFile, group.GroupId, 'group');
         } else {
-            sendMessage(message, group.GroupId, 'group');
+            connectToSocket().sendGroupSocketMessage(currentUser.id,group.GroupId,message);
+            // sendMessage(message, group.GroupId, 'group');
             displaySendMessage(message);
         }
         messageInput.value = '';
     });
-
     if(composeDiv) {
         composeDiv.innerHTML = '';
         composeDiv.appendChild(fileInputBtn);
@@ -248,10 +254,9 @@ function displayReceviedMessage(message:string) {
             const messageNode = document.createTextNode(message);
             p.appendChild(messageNode);
             receivedMessageDiv.appendChild(p);
-        }
-
+        };
         chatsMessagesDiv.appendChild(receivedMessageDiv);
-    }
+    };
 }
 
 function displaySendMessage(message: string) {
@@ -272,10 +277,20 @@ function displaySendMessage(message: string) {
             const messageNode = document.createTextNode(message);
             p.appendChild(messageNode);
             sendMessageDiv.appendChild(p);
-        } 
+        };
         chatsMessagesDiv.appendChild(sendMessageDiv);
     };
 }
+
+// Function to handle clicking on a contact card
+// function onContactCardClick(contact:ContactDetails) {
+//     joinOrCreatePrivateRoom(currentUser.id, contact.contactId);
+// }
+
+// Function to handle clicking on a group card
+// function onGroupCardClick(group:GroupDetails) {
+//     joinOrCreateGroupRoom(group.GroupId);
+// }
 
 async function sendMessage(message:string, id:string, messageType:string) {
     try {
@@ -309,62 +324,12 @@ async function sendMessage(message:string, id:string, messageType:string) {
             console.log("User Details not Found");
         } else {
             console.log(`Error: ${response.statusText}`);
-        }
+        };
     } catch (error) {
         console.error("Error in fetching Private sending message",error);
-    }
-}
-
-function composeChats(contact: ContactDetails) {
-    const messageInput = document.createElement("input");
-    messageInput.setAttribute("type", "text");
-    messageInput.placeholder = "Type a Message";
-
-    const fileInputBtn = document.createElement("button");
-    fileInputBtn.textContent = "+";
-    fileInputBtn.addEventListener("click", ()=> {
-        fileInput.click();
-    });
-
-    const fileInput =  document.createElement("input");
-    fileInput.setAttribute("type", "file");
-    fileInput.setAttribute("multiple", "false");
-    fileInput.style.display = "none";
-
-    fileInput.addEventListener("change", () => {
-        // Handle file selection or further actions here if needed
-        const selectedFile = (fileInput as HTMLInputElement).files?.[0];
-        if (selectedFile) {
-            console.log("Selected Files:", selectedFile);
-        }
-    });
-
-    const sendBtn = document.createElement("button");
-    sendBtn.classList.add("send-btn");
-    sendBtn.textContent = "Send";
-    sendBtn.addEventListener("click" , ()=> {
-        const message = messageInput.value;
-        console.log("Message Input : ",message);
-        const selectedFile = (fileInput as HTMLInputElement).files?.[0];
-        console.log(selectedFile);
-
-        if(selectedFile) {
-            sendMultiMediaMessage(selectedFile, contact.contactId, 'private');
-        } else {
-            sendMessage(message, contact.contactId, 'private');
-            displaySendMessage(message);
-        }
-        messageInput.value = '';
-    });
-
-    if(composeDiv) {
-        composeDiv.innerHTML = '';
-        composeDiv.appendChild(fileInputBtn);
-        composeDiv.appendChild(fileInput);
-        composeDiv.appendChild(messageInput);
-        composeDiv.appendChild(sendBtn);
     };
 }
+
 
 
 async function sendMultiMediaMessage(selectedFile: File, id: string, messageType: string) {
@@ -387,7 +352,8 @@ async function sendMultiMediaMessage(selectedFile: File, id: string, messageType
 
         if(response.status === 200) {
             const data = await response.json();
-            console.log(data);
+            console.log("From Send Message Mutlimedia", data);
+            // Send to Display Message
             console.log("Fetched sucessfully send MultiMedia request");
         } else if (response.status === 401 || 403) {
             console.log("Unauthorized User");
@@ -395,10 +361,10 @@ async function sendMultiMediaMessage(selectedFile: File, id: string, messageType
             console.log("User Details not Found");
         } else {
             console.log(`Error: ${response.statusText}`);
-        }
+        };
     } catch (error) {
         console.error("Error in fetching Send media file request",error);
-    }
+    };
 }
 
 async function getAllPrivateMessages() {
@@ -415,7 +381,6 @@ async function getAllPrivateMessages() {
         if(response.status === 200) {
             const data = await response.json();
             console.log("Fetched sucessfully get All Private Message request");
-            console.log(data);
             localStorage.setItem("PrivateChats", JSON.stringify(data));
 
         } else if (response.status === 401 || 403) {
@@ -424,7 +389,7 @@ async function getAllPrivateMessages() {
             console.log("User Details not Found");
         } else {
             console.log(`Error: ${response.statusText}`);
-        }
+        };
     } catch (error) {
         console.error("Error in fetching all private message", error);
     }
@@ -445,12 +410,11 @@ async function getAllGroupMessages() {
             body: JSON.stringify ( {
                 allGroupsId: allGroupsId   
             } )
-        })
+        });
 
         if(response.status === 200) {
             const data = await response.json();
             console.log("Fetched sucessfully get All Group Message request");
-            console.log(data);
             localStorage.setItem("GroupChats", JSON.stringify(data));
         } else if (response.status === 401 || 403) {
             console.log("Unauthorized User");
@@ -458,15 +422,8 @@ async function getAllGroupMessages() {
             console.log("User Details not Found");
         } else {
             console.log(`Error: ${response.statusText}`);
-        }
+        };
     } catch (error) {
         console.error("Error in fetching all group message", error);
-    }
+    };
 }
-
-
-// declare var io: any; // Declare 'io' as a global variable
-
-// Usage in your TypeScript file
-// let socket = io(); // Accessing the globally declared 'io' variable
-// console.log(socket);
