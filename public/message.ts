@@ -3,7 +3,7 @@ const chatsheaderDiv: HTMLDivElement | null = document.getElementById("chats-hea
 const chatsMessagesDiv: HTMLDivElement | null = document.getElementById("chats-messages-div")as HTMLDivElement | null;
 const composeDiv: HTMLDivElement |  null = document.getElementById("compose-div") as HTMLDivElement | null;
 const personalTabBtn: HTMLButtonElement | null = document.getElementById("PersonalTab") as HTMLButtonElement | null;
-const groupTab:HTMLButtonElement | null = document.getElementById("groupTab") as HTMLButtonElement | null;
+const groupTab: HTMLButtonElement | null = document.getElementById("groupTab") as HTMLButtonElement | null;
 
 function resetChatDisplay() {
     [chatsSideBar, chatsMessagesDiv, chatsheaderDiv, composeDiv].forEach((element) => {
@@ -77,6 +77,7 @@ function displayGroupCard(group: GroupDetails) {
             displayGroupHeader(group);
             composeGroupChats(group);
             getGroupChats(group);
+            getAllGroupMembers(group);
             socketFunctions.joinOrCreateGroupRoom(group.GroupId);
         }
     );
@@ -85,7 +86,9 @@ function displayGroupCard(group: GroupDetails) {
 function getPrivateChats(contact:ContactDetails) {
     const storedMessagesRaw = localStorage.getItem("PrivateChats");
     const storedMessages: Message[] = storedMessagesRaw ? JSON.parse(storedMessagesRaw) : [];
-
+    if(chatsMessagesDiv ){
+        chatsMessagesDiv.innerHTML = '';
+    };
     storedMessages.forEach( (message:Message)=> {
         if (message.senderId === currentUser.id && message.receiverId === contact.contactId) {
             displaySendMessage(message.message);
@@ -98,7 +101,9 @@ function getPrivateChats(contact:ContactDetails) {
 function getGroupChats(group: GroupDetails) {
     const storedMessagesRaw = localStorage.getItem("GroupChats");
     const storedMessages: Message[] = storedMessagesRaw ? JSON.parse(storedMessagesRaw) : [];
-
+    if(chatsMessagesDiv ){
+        chatsMessagesDiv.innerHTML = '';
+    };
     storedMessages.forEach( (message:Message)=> {
         if (message.senderId === currentUser.id && message.receiverId === group.GroupId) {
             displaySendMessage(message.message);
@@ -117,30 +122,36 @@ function displayHeaeders(contact: ContactDetails) {
         chatsheaderDiv.appendChild(headerTextNode);
     };
 }
-
+let currentGroup:GroupDetails;
 function displayGroupHeader(group:GroupDetails) {
+    currentGroup = group;
     if(chatsheaderDiv) {
         chatsheaderDiv.innerHTML = '';
         const headerName = group.groupName;
         if(group.isAdmin) {
             const editGroupBtn = document.createElement("button");
             editGroupBtn.classList.add("reg");
-            editGroupBtn.addEventListener("click", editGroup);
-            const headerTextNode = document.createTextNode(headerName);
-            chatsheaderDiv.style.textAlign = "center";
-            chatsheaderDiv.appendChild(headerTextNode);
+            editGroupBtn.addEventListener("click",()=> {
+                if(editGroupDiv) {
+                    editGroupDiv.style.display = "block";
+                };
+            });
+            editGroupBtn.innerText = "Edit Group";
+            editGroupBtn.style.float= "right";
+            chatsheaderDiv.appendChild(editGroupBtn);
         } else {
-            const headerTextNode = document.createTextNode(headerName);
-            chatsheaderDiv.style.textAlign = "center";
-            chatsheaderDiv.appendChild(headerTextNode);
+            const leaveGroupBtn = document.createElement("button");
+            leaveGroupBtn.classList.add("log");
+            leaveGroupBtn.innerText = "Leave Group";
+            leaveGroupBtn.style.float= "right";
+            chatsheaderDiv.appendChild(leaveGroupBtn);
         }
+        const headerTextNode = document.createTextNode(headerName);
+        chatsheaderDiv.style.textAlign = "center";
+        chatsheaderDiv.appendChild(headerTextNode);
     };
-}
+};
 
-function editGroup() {
-    const editGroupDiv = document.createElement("div");
-    editGroupDiv.classList.add("modal");
-}
 function composeChats(contact: ContactDetails) {
     const messageInput = document.createElement("input");
     messageInput.setAttribute("type", "text");
@@ -212,7 +223,6 @@ function composeGroupChats(group: GroupDetails) {
             console.log("Selected Files:", selectedFile);
         }
     });
-    console.log(group);
     const sendBtn = document.createElement("button");
     sendBtn.classList.add("send-btn");
     sendBtn.textContent = "Send";
@@ -282,16 +292,6 @@ function displaySendMessage(message: string) {
     };
 }
 
-// Function to handle clicking on a contact card
-// function onContactCardClick(contact:ContactDetails) {
-//     joinOrCreatePrivateRoom(currentUser.id, contact.contactId);
-// }
-
-// Function to handle clicking on a group card
-// function onGroupCardClick(group:GroupDetails) {
-//     joinOrCreateGroupRoom(group.GroupId);
-// }
-
 async function sendMessage(message:string, id:string, messageType:string) {
     try {
         const token = localStorage.getItem("token") || '';
@@ -329,8 +329,6 @@ async function sendMessage(message:string, id:string, messageType:string) {
         console.error("Error in fetching Private sending message",error);
     };
 }
-
-
 
 async function sendMultiMediaMessage(selectedFile: File, id: string, messageType: string) {
     try {

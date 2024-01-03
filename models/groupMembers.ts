@@ -29,10 +29,12 @@ GroupMembers.init({
         allowNull:false
     },
     createdAt:{
-        type:DataTypes.DATE
+        type:DataTypes.DATE,
+        allowNull:false
     },
     updatedAt:{
-        type: DataTypes.DATE
+        type: DataTypes.DATE,
+        allowNull:false
     },
 }, {
     sequelize,

@@ -8,7 +8,7 @@ import { Request, Response, NextFunction } from "express";
 import bcrypt from 'bcrypt';
 import jsonwebtoken from 'jsonwebtoken';
 import dotenv from 'dotenv';
-
+import Invites from "../models/invites";
 
 dotenv.config();
 
@@ -61,6 +61,29 @@ interface addGroupRequest extends Request {
         groupName:string;
         groupMembers: [];
         UserId: string;
+    }
+}
+
+interface adminOperationsReqest extends Request {
+    body: {
+        groupName: string,
+        selectedMembers: [],
+        opsType: string,
+        groupId: string,
+        UserId: string
+    }
+}
+
+interface ResponseInvites extends Request {
+    body: {
+        invite: {
+            id:string;
+            inviteType:string;
+            otherDetails: string;
+            senderId:string;
+            response: boolean;
+        },
+        UserId: string
     }
 }
 
@@ -174,34 +197,22 @@ export const currentUser = async (req:CurentUserRequest, res:Response, _next:Nex
 export const addContact = async (req:AddContactRequest, res:Response, _next:NextFunction)=> {
     let transaction = await sequelize.transaction();
     try {
-        const isExistingUser = await User.findOne({where: {$phoneNo$: req.body.phoneNo}})
+        const isExistingUser = await User.findOne({where: {$phoneNo$: req.body.phoneNo}, transaction})
         if(!isExistingUser) {
             await transaction.rollback();
             return res.status(404).json({message: "User Details not found"});
         } else {
-            const contactId = isExistingUser.id;
-            const {firstName, lastName, phoneNo, UserId} = req.body;
-            
-            const result = await Contacts.create( {firstName, lastName, phoneNo, contactId, UserId}, {transaction});
-            const userData = await User.findOne({where : {$id$: req.body.UserId}, transaction});
-
-            if(userData) {
-                const user = {
-                    firstName: userData.firstName,
-                    lastName: userData.lastName,
-                    phoneNo:userData.phoneNo,
-                    contactId: userData.id,
-                    UserId: isExistingUser.id
-                }
-                await Contacts.create( user, {transaction});
-                await transaction.commit();
-                console.log(`User ${userData?.firstName} ${userData?.lastName} Have been Added to Contacts`);
-            } else {
-                await transaction.rollback();
-                res.status(404).json(( {message: "Failed to add contact "}));
-            }
-            
-            return res.status(201).json(result);
+            const sender = await User.findOne( {where: {$id$: req.body.UserId}, transaction} );
+            if(sender) {
+                await Invites.create( {
+                    senderId: sender.id ,
+                    receiverId: isExistingUser.id,
+                    inviteType: 'private',
+                    otherDetails: sender.firstName + sender.lastName
+                }, {transaction} );
+            };
+            await transaction.commit();
+            return res.status(201).json({message: "Invite has been send "});
         }
     } catch (error) {
         console.error(error);
@@ -241,7 +252,7 @@ export const addGroup = async  (req:addGroupRequest, res:Response, _next:NextFun
         });
 
         await Promise.all(groupMembersPromises);
-        transaction.commit();
+        await transaction.commit();
         console.log(`Added group: ${req.body.groupName}`);
         return res.status(201).json(group);
     } catch (error) {
@@ -262,7 +273,7 @@ export const getAllGroups = async  (req:GetAllGroupsRequest, res: Response, _nex
         const membersGroupsModified = membersGroups.map(group => ({ ...group.toJSON(), isAdmin: false }));
 
         const responseData = [...adminGroupsModified, ...membersGroupsModified];
-        transaction.commit();
+        await transaction.commit();
         console.log("Fetched all Groups successfully")
         return res.status(200).json(responseData);
     } catch (error) {
@@ -272,3 +283,142 @@ export const getAllGroups = async  (req:GetAllGroupsRequest, res: Response, _nex
     }
 }
 
+export const getAllGroupMembers =  async ( req:Request, res:Response, _next: NextFunction )=> {
+    let transaction = await sequelize.transaction();
+    try {
+        const groupId = req.params.groupId;
+        const isAdmin = await Groups.findOne( {where: {$id$ : groupId}, transaction} );
+       
+        if(isAdmin && req.body.UserId === isAdmin.UserId ){
+
+            const allGroupMembers = await GroupMembers.findAll( {where: {$GroupId$: groupId}, transaction} );
+            const responseData = [];
+            for( const member of allGroupMembers) {
+                const contact = await Contacts.findOne( {where: {$UserId$: req.body.UserId, $contactId$: member.contactId}, transaction} );
+                if(contact) {
+                    responseData.push(contact);
+                };
+            };
+            await transaction.commit();
+            return res.status(200).json(responseData);
+        } else {
+            await transaction.rollback();
+            return res.status(403).json({message : "Unauthorized Access: User is not an Admin"});
+        }
+        
+    } catch (error) {
+        console.error(error);
+        await transaction.rollback();
+        return res.status(500).json({message: "Internal Server Error"});
+    }
+}
+
+export const adminOperations = async (req:adminOperationsReqest, res:Response, _next: NextFunction) => {
+    let transaction = await sequelize.transaction();
+
+    try {
+        const isAdmin = await Groups.findOne( {where: {$id$ : req.body.groupId}, transaction} );
+        if(isAdmin && req.body.UserId === isAdmin.UserId) {
+            if(req.body.opsType === "editGroupName") {
+                await isAdmin.update( {groupName: req.body.groupName}, {transaction});
+                await transaction.commit();
+                return res.status(201).json(req.body);
+            } else if( req.body.opsType === "addMembers" ) {
+                await Promise.all(req.body.selectedMembers.map(async (member) => {
+                    await Invites.create({
+                        senderId: req.body.groupId,
+                        receiverId: member,
+                        inviteType: "group",
+                        otherDetails: isAdmin.groupName
+                    }, { transaction });
+                }));
+                await transaction.commit();
+                return res.status(201).json(req.body);
+            } else if( req.body.opsType === "removeMembers" ) {
+                req.body.selectedMembers.forEach( (member) => {
+                    GroupMembers.destroy( {where: {$contactId$: member, $GroupId$: req.body.groupId}} );
+                } );
+                await transaction.commit();
+                return res.status(201).json(req.body);
+            }
+        } else {
+            await transaction.rollback();
+            return res.status(403).json( {message: "Unauthorized Access: User is not an Admin"} );
+        }
+
+        console.log(req.body);
+        await transaction.commit();
+        return res.status(201).json(req.body);
+    } catch (error) {
+        console.error(error);
+        await transaction.rollback();
+        return res.status(500).json({message: "Internal Server Error"});
+    }
+}
+
+export const getAllInvites = async (req:Request, res:Response, _next:NextFunction) => {
+    let transaction = await sequelize.transaction();
+    try {
+        const allInvites =  await Invites.findAll({where: {$receiverId$: req.body.UserId}});
+       
+        await transaction.commit();
+        return res.status(200).json(allInvites);
+    } catch (error) {
+        console.error(error);
+        await transaction.rollback();
+        return res.status(500).json({message: "Internal Server Error"});
+    }
+}
+
+export const responseInvites = async (req: ResponseInvites, res: Response, _next: NextFunction) => {
+    let transaction = await sequelize.transaction();
+    try {
+        if (req.body.invite.response === false) {
+            await Invites.destroy({ where: { id: req.body.invite.id }, transaction });
+            await transaction.commit();
+            return res.status(201).json({ message: "Invite has been declined" });
+        } else {
+            if (req.body.invite.inviteType === 'group') {
+                await GroupMembers.create({
+                    contactId: req.body.UserId,
+                    groupName: req.body.invite.otherDetails,
+                    GroupId: req.body.invite.senderId
+                }, { transaction });
+                await Invites.destroy({ where: { id: req.body.invite.id }, transaction });
+                await transaction.commit();
+                return res.status(201).json({ message: "Group membership added" });
+            } else if (req.body.invite.inviteType === 'private') {
+                const currentUser = await User.findOne({ where: { id: req.body.UserId }, transaction });
+                const senderUser = await User.findOne({ where: { id: req.body.invite.senderId }, transaction });
+
+                if (currentUser && senderUser) {
+                    await Contacts.create({
+                        firstName: senderUser.firstName,
+                        lastName: senderUser.lastName,
+                        phoneNo: senderUser.phoneNo,
+                        contactId: senderUser.id,
+                        UserId: currentUser.id
+                    }, { transaction });
+
+                    await Contacts.create({
+                        firstName: currentUser.firstName,
+                        lastName: currentUser.lastName,
+                        phoneNo: currentUser.phoneNo,
+                        contactId: currentUser.id,
+                        UserId: senderUser.id
+                    }, { transaction });
+                }
+
+                await Invites.destroy({ where: { id: req.body.invite.id }, transaction });
+                await transaction.commit();
+                return res.status(201).json({ message: "Contacts have been added" });
+            }
+            await transaction.rollback();
+            return res.status(403).json({ message: "Unauthorized Access" });
+        }
+    } catch (error) {
+        console.error(error);
+        await transaction.rollback();
+        return res.status(500).json({ message: "Internal Server Error" });
+    }
+}

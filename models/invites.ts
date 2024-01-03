@@ -1,28 +1,24 @@
-import {DataTypes, Model, InferAttributes, 
-    InferCreationAttributes, CreationOptional,
- } from "sequelize";
+import {DataTypes, Model, InferAttributes, InferCreationAttributes, 
+    CreationOptional} from "sequelize";
 import sequelize from "../utils/database";
 
-class Messages extends Model<InferAttributes<Messages>, InferCreationAttributes<Messages>> {
+
+class Invites extends Model<InferAttributes<Invites>, InferCreationAttributes<Invites>> {
     declare id: CreationOptional<string>;
-    declare message: string;
     declare senderId: string;
     declare receiverId: string;
-    declare messageType: string;
+    declare inviteType: string;
+    declare otherDetails: string;
     declare createdAt: CreationOptional<Date>;
     declare updatedAt: CreationOptional<Date>;
 }
 
-Messages.init({
+Invites.init({
     id: {
         type: DataTypes.UUID,
-        allowNull: false,
-        primaryKey: true,
-        defaultValue: DataTypes.UUIDV4
-    },
-    message: {
-        type: DataTypes.STRING,
-        allowNull: false
+        allowNull:false,
+        primaryKey:true,
+        defaultValue:DataTypes.UUIDV4
     },
     senderId: {
         type:DataTypes.STRING,
@@ -32,9 +28,13 @@ Messages.init({
         type:DataTypes.STRING,
         allowNull: false
     },
-    messageType: {
+    inviteType: {
         type:DataTypes.ENUM('private', 'group'),
-        allowNull: false
+        allowNull:false
+    }, 
+    otherDetails: {
+        type:DataTypes.STRING,
+        allowNull:false
     },
     createdAt:{
         type:DataTypes.DATE,
@@ -46,8 +46,8 @@ Messages.init({
     },
 }, {
     sequelize,
-    tableName:'Messages',
-    modelName: "Messages",
+    tableName:'invites',
+    modelName: "Invites",
 });
 
-export default Messages;
+export default Invites;

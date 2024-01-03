@@ -18,6 +18,9 @@ async function registerUser(user: SignUpForm): Promise<void> {
             console.log("New User Added");
             if(signUpDiv) {
                 signUpDiv.style.display = "none";
+            };
+            if(loginDiv) {
+                loginDiv.style.display = "block";
             }
         } else if (response.status === 409) {
             console.log("User Already Exits");
@@ -238,5 +241,139 @@ async function getAllGroups():Promise<void> {
         }
     } catch(error) {
         console.error("Error in fetching All groups Details",error);
+    }
+}
+
+async function getAllGroupMembers(group: GroupDetails) {
+    const token = localStorage.getItem("token") || '';
+    try {
+        const response = await fetch (`chats/getAllMembers/${group.GroupId}`, {
+            method:'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+        });
+
+        if(response.status === 200) {
+            const data:[] = await response.json();
+           
+            const allGroupsMembers = generateContactList(data);
+
+            if(groupMemberListDiv) {
+                groupMemberListDiv.appendChild(allGroupsMembers);
+            };
+           
+            const nonGroupMembersList:ContactDetails[] = [];
+
+            allContacts.forEach((contact: ContactDetails) => {
+                if (!data.some((member: ContactDetails) => member.contactId === contact.contactId)) {
+                    nonGroupMembersList.push(contact);
+                }
+            });
+            const nonMembers = generateContactList(nonGroupMembersList);
+            if(addGroupMemberListDiv) {
+                addGroupMemberListDiv.appendChild(nonMembers);
+            };
+            console.log("Fetched sucessfully all group members details");
+        } else if (response.status === 401 || 403) {
+            console.log("Unauthorized User");
+        } else if( response.status === 404) {
+            console.log("User Details not Found");
+        } else {
+            console.log(`Error: ${response.statusText}`);
+        }
+    } catch (error) {
+        console.error("Error in fetching all Group Members Details",error);
+    }
+}
+
+async function adminOperations(selectedUsers: any[], groupName:string, opsType:string) {
+    try {
+        const token = localStorage.getItem("token") || '';
+        const response = await fetch('/chats/adminOps', {
+            method:'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify ( {
+                groupName: groupName,
+                selectedMembers: selectedUsers,
+                opsType: opsType,
+                groupId: currentGroup.GroupId
+            } )
+        });
+
+        if(response.status === 201) {
+            await response.json();
+            console.log("Admin Operatin Done successfully");
+            // displayGroupCard(data);
+        } else if (response.status === 401 || 403) {
+            console.log("Unauthorized User");
+        } else {
+            console.log(`Error: ${response.statusText}`);
+        }
+
+    } catch (error) {
+        console.log("Error in fetching Admin operation request ", error);
+    }
+}
+
+async function getAllInvites() {
+    try {
+        const token = localStorage.getItem("token") || '';
+        const response = await fetch('chats/getAllInvites', {
+            method:'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            }
+        });
+
+        if(response.status === 200) {
+            const data:[] = await response.json();
+            console.log("Got all invites");
+            console.log(data);
+            data.forEach( (invite)=> {
+                displayInvites(invite);
+            } );
+        } else if (response.status === 401 || 403) {
+            console.log("Unauthorized User");
+        } else {
+            console.log(`Error: ${response.statusText}`);
+        }
+    } catch (error) {
+        console.log("Error in fetching get All invites request ", error);
+    }
+}
+
+async function respondInvites(invite: InvitiesDetails) {
+    try {
+        const token = localStorage.getItem("token") || '';
+        const response = await fetch('chats/responseInvites', {
+            method:'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body :JSON.stringify( {
+                invite: invite
+            } )
+        });
+
+        if(response.status === 201) {
+            const data = await response.json();
+            console.log("Got all invies");
+            console.log(data);
+            
+            // displayGroupCard(data);
+        } else if (response.status === 401 || 403) {
+            console.log("Unauthorized User");
+        } else {
+            console.log(`Error: ${response.statusText}`);
+        }
+    } catch (error) {
+        console.log("Error in fetching respond invites request ", error);
     }
 }

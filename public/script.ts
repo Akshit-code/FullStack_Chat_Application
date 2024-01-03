@@ -39,8 +39,28 @@ const groupName: FormElement | null = document.getElementById("groupName") as Fo
 const addGroupBtn: HTMLButtonElement | null = document.getElementById("createGroup-btn") as HTMLButtonElement | null;
 const groupSubmitBtn:HTMLButtonElement | null = document.getElementById("Group-Submit-Btn") as HTMLButtonElement | null;
 
+const editGroupDiv: HTMLDivElement | null = document.getElementById("editGroupDiv")  as HTMLDivElement | null;
+const editGroupNameDiv: HTMLDivElement | null = document.getElementById("editGroupNameDiv") as HTMLDivElement | null;
+const editGroupNameBtn: HTMLButtonElement | null = document.getElementById("editGroupNameBtn") as HTMLButtonElement | null;
+const editGroupNameSubmitBtn: HTMLButtonElement | null = document.getElementById("editGroupNameubmitBtn") as HTMLButtonElement | null;
+const editGroupNameForm: HTMLFormElement | null  = document.getElementById("editGroupNameForm")as HTMLFormElement | null;
+const editGroupNameInput: FormElement | null = document.getElementById("editGroupNameInput") as FormElement | null;
+
+const removeGroupMembersDiv: HTMLDivElement | null = document.getElementById("removeGroupMembersDiv") as HTMLDivElement | null;
+const removeGroupMembersBtn: HTMLButtonElement | null = document.getElementById("removeGroupMembersBtn") as HTMLButtonElement | null;
+const removeGroupMemberForm: HTMLFormElement | null = document.getElementById("removeGroupMemberForm") as  HTMLFormElement | null;
+
+const groupMemberListDiv: HTMLDivElement | null = document.getElementById("GroupMemberList") as HTMLDivElement | null;
+const addGroupMembersDiv: HTMLDivElement | null = document.getElementById("addGroupMembersDiv") as HTMLDivElement | null;
+const addGroupMembersBtn: HTMLButtonElement | null = document.getElementById("addGroupMembersBtn") as HTMLButtonElement | null;
+const addGroupMemberListDiv: HTMLDivElement | null = document.getElementById("addGroupMemberList") as HTMLDivElement | null;
+const addGroupMemberForm: HTMLFormElement | null = document.getElementById("addGroupMemberForm") as HTMLFormElement | null;
+
+
 const chatsSectionDiv:HTMLDivElement | null = document.getElementById("chatsSectionDiv") as HTMLDivElement | null;
 const myChatsNavBtn:HTMLButtonElement | null = document.getElementById("myChats") as HTMLButtonElement | null;
+const myInvitesBtn:HTMLButtonElement | null = document.getElementById("myInvites") as HTMLButtonElement | null;
+const myInvitesDiv:HTMLDivElement | null = document.getElementById("myInvitesDiv") as HTMLDivElement | null;
 
 // Define interfaces for elements
 interface FormElement extends HTMLInputElement {
@@ -93,7 +113,6 @@ interface GroupDetails {
     isAdmin: boolean;
 }
 
-
 interface Message {
     id: string;
     message: string;
@@ -102,6 +121,14 @@ interface Message {
     messageType: string;
     createdAt: string;
     updatedAt: string;
+}
+
+interface InvitiesDetails {
+    id:string;
+    inviteType:string;
+    otherDetails: string;
+    senderId:string;
+    response: boolean;
 }
 
 // Toggle navigation
@@ -145,6 +172,18 @@ if (window) {
                 if(addGroupDiv) {
                     addGroupDiv.style.display = "none";
                 };
+                if(editGroupDiv) {
+                    editGroupDiv.style.display="none";
+                };
+                if(editGroupNameDiv) {
+                    editGroupNameDiv.style.display = "none";
+                };
+                if(addGroupMembersDiv) {
+                    addGroupMembersDiv.style.display = "none";
+                };
+                if(removeGroupMembersDiv) {
+                    removeGroupMembersDiv.style.display = "none";
+                };
             };
         });
     };
@@ -174,6 +213,14 @@ if(loginBtn) {
     });
 }
 
+if(logoutBtn) {
+    logoutBtn.addEventListener("click", async ()=> {
+        await logoutuser();
+        window.location.href = "../";
+        localStorage.removeItem("token");
+    });
+}
+
 if(profileBtn) {
     profileBtn.addEventListener("click", () => {
         if(profileDiv) {
@@ -190,7 +237,6 @@ if(addContactBtn) {
     });
 }
 
-
 if(addGroupBtn) {
     addGroupBtn.addEventListener("click", ()=> {
         if(addGroupDiv) {
@@ -203,11 +249,35 @@ if(addGroupBtn) {
     });
 }
 
-if(logoutBtn) {
-    logoutBtn.addEventListener("click", async ()=> {
-        await logoutuser();
-        window.location.href = "../";
-        localStorage.removeItem("token");
+if(editGroupNameBtn) {
+    editGroupNameBtn.addEventListener("click", ()=> {
+        if(editGroupNameDiv) {
+            editGroupNameDiv.style.display = "block";
+        }
+    });
+}
+
+if(removeGroupMembersBtn) {
+    removeGroupMembersBtn.addEventListener("click", ()=> {
+        const checkboxes = document.querySelectorAll(`input[name=selectedUsers]:checked`);
+        checkboxes.forEach((checkBox: any) => {
+            checkBox.checked = false;
+        });
+        if(removeGroupMembersDiv) {
+            removeGroupMembersDiv.style.display = 'block';
+        }
+    });
+}
+
+if(addGroupMembersBtn) {
+    addGroupMembersBtn.addEventListener("click", ()=> {
+        if(addGroupMembersDiv) {
+            const checkboxes = document.querySelectorAll(`input[name=selectedUsers]:checked`);
+            checkboxes.forEach((checkBox: any) => {
+                checkBox.checked = false;
+            });
+            addGroupMembersDiv.style.display = "block";
+        }
     });
 }
 
@@ -257,6 +327,9 @@ if(loginForm) {
 if(addContactForm) {
     addContactForm.addEventListener("submit", (e)=> {
         e.preventDefault();
+        if(addContactDiv) {
+            addContactDiv.style.display = "none";
+        }
         if(contactFirstName && contactLastName && contactPhoneNo) {
             const formData:ContactDetailsForn = {
                 firstName: contactFirstName.value,
@@ -268,17 +341,75 @@ if(addContactForm) {
     });
 }
 
-if(addGroupForm ) {
+if(addGroupForm) {
     addGroupForm.addEventListener("submit", (e)=> {
         e.preventDefault();
         const selectedUsers = Array.from(document.querySelectorAll('input[name="selectedUsers"]:checked')).map((checkbox:any)=> checkbox.value);
-        console.log("Selected Users:", selectedUsers);
+        if(addGroupDiv) {
+            addGroupDiv.style.display = "none";
+        }
         if(groupName) {
             addGroup(selectedUsers, groupName.value);
         };
         if(addGroupDiv) {
             addGroupDiv.style.display = "none";
         };
+        const checkboxes = document.querySelectorAll(`input[name=selectedUsers]:checked`);
+        checkboxes.forEach((checkBox: any) => {
+            checkBox.checked = false;
+        });
+    });
+}
+
+if(addGroupMemberForm) {
+    addGroupMemberForm.addEventListener("submit", (e)=> {
+        e.preventDefault();
+        if(addGroupMembersDiv) {
+            addGroupMembersDiv.style.display = "none";
+        };
+
+        const selectedUsers = Array.from(document.querySelectorAll(`input[name=selectedUsers]:checked`)).map((checkBox:any) => checkBox.value);
+        console.log("Selected Users:", selectedUsers);
+        
+        adminOperations(selectedUsers, currentGroup.groupName, "addMembers");
+
+        const checkboxes = document.querySelectorAll(`input[name=selectedUsers]:checked`);
+        checkboxes.forEach((checkBox: any) => {
+            checkBox.checked = false;
+        });
+        
+    });
+}
+
+if(removeGroupMemberForm) {
+    removeGroupMemberForm.addEventListener("submit", (e)=> {
+        e.preventDefault();
+        if(removeGroupMembersDiv) {
+            removeGroupMembersDiv.style.display = "none";
+        }
+        const selectedUsers = Array.from(document.querySelectorAll(`input[name=selectedUsers]:checked`)).map((checkBox:any) => checkBox.value);
+        console.log("Selected Users:", selectedUsers);
+        adminOperations(selectedUsers, currentGroup.groupName, "removeMembers");
+
+        const checkboxes = document.querySelectorAll(`input[name=selectedUsers]:checked`);
+        checkboxes.forEach((checkBox: any) => {
+            checkBox.checked = false;
+        });
+    });
+}
+
+if(editGroupNameForm) {
+    editGroupNameForm.addEventListener("submit", (e)=> {
+        e.preventDefault();
+        if(editGroupNameDiv) {
+            editGroupNameDiv.style.display="none";
+        }
+        if(editGroupNameInput) {
+            const newGroupName = editGroupNameInput.value;
+            adminOperations([], newGroupName, "editGroupName");
+            console.log(newGroupName);
+        };
+       
     });
 }
 
@@ -325,36 +456,36 @@ document.getElementById("openBtn")?.addEventListener("click", openNav);
 document.getElementById("closeBtn")?.addEventListener("click", closeNav);
 
 function createContactRow(contact:ContactDetails): HTMLTableRowElement {
-  const row = document.createElement('tr');
+    const row = document.createElement('tr');
+    
+    const firstNameCell = document.createElement('td');
+    firstNameCell.textContent = contact.firstName;
+    row.appendChild(firstNameCell);
 
-  const firstNameCell = document.createElement('td');
-  firstNameCell.textContent = contact.firstName;
-  row.appendChild(firstNameCell);
+    const lastNameCell = document.createElement('td');
+    lastNameCell.textContent = contact.lastName;
+    row.appendChild(lastNameCell);
 
-  const lastNameCell = document.createElement('td');
-  lastNameCell.textContent = contact.lastName;
-  row.appendChild(lastNameCell);
+    const phoneNumberCell = document.createElement('td');
+    phoneNumberCell.textContent = contact.phoneNo.toString();
+    row.appendChild(phoneNumberCell);
 
-  const phoneNumberCell = document.createElement('td');
-  phoneNumberCell.textContent = contact.phoneNo.toString();
-  row.appendChild(phoneNumberCell);
+    const actionsCell = document.createElement('td');
+    const editBtn = document.createElement('button');
+    editBtn.textContent = 'Edit';
+    actionsCell.appendChild(editBtn);
 
-  const actionsCell = document.createElement('td');
-  const editBtn = document.createElement('button');
-  editBtn.textContent = 'Edit';
-  actionsCell.appendChild(editBtn);
+    const deleteBtn = document.createElement('button');
+    deleteBtn.textContent = 'Delete';
+    actionsCell.appendChild(deleteBtn);
 
-  const deleteBtn = document.createElement('button');
-  deleteBtn.textContent = 'Delete';
-  actionsCell.appendChild(deleteBtn);
+    const viewChatsBtn = document.createElement('button');
+    viewChatsBtn.textContent = 'View Chats';
+    actionsCell.appendChild(viewChatsBtn);
 
-  const viewChatsBtn = document.createElement('button');
-  viewChatsBtn.textContent = 'View Chats';
-  actionsCell.appendChild(viewChatsBtn);
+    row.appendChild(actionsCell);
 
-  row.appendChild(actionsCell);
-
-  return row;
+    return row;
 }
 
 if(myContactsNavBtn) {
@@ -368,10 +499,15 @@ if(myContactsNavBtn) {
 
 if(myChatsNavBtn) {
     myChatsNavBtn.addEventListener("click", ()=> {
-        if(tableDiv && chatsSectionDiv) {
+        if(tableDiv) {
             tableDiv.style.display = "none";
-            chatsSectionDiv.style.display="block";
         };
+        if(myInvitesDiv) {
+            myInvitesDiv.style.display = 'none';
+        };
+        if(chatsSectionDiv) {
+            chatsSectionDiv.style.display="none";
+        }
     });
 }
 
@@ -385,7 +521,7 @@ function tableBody(contacts:ContactDetails[]):void {
     };
 }
 
-function generateContactList(contacts: ContactDetails[]) {
+function generateContactList(contacts: any[]) {
     const contactListDiv = document.createElement("div");
     contactListDiv.classList.add("contact-list");
 
@@ -407,3 +543,44 @@ function generateContactList(contacts: ContactDetails[]) {
     } );
     return contactListDiv;
 }
+
+if(myInvitesBtn) {
+    myInvitesBtn.addEventListener( "click", () => {
+        if(myInvitesDiv) {
+            getAllInvites();
+            myInvitesDiv.style.display = "block";
+           
+        };
+        if(chatsSectionDiv) {
+            chatsSectionDiv.style.display = "none";
+        };
+        if(tableDiv) {
+            tableDiv.style.display="none";
+        }
+    });
+}
+
+function displayInvites(invite:InvitiesDetails) {
+    const singleInviteDiv = document.createElement("div");
+    const text = document.createTextNode(`Hiii You have been invited to join : ${invite.otherDetails}`);
+    const acceptInviteBtn = document.createElement('button');
+    acceptInviteBtn.innerText= "Accept";
+    const rejectInviteBtn = document.createElement("button");
+    rejectInviteBtn.innerText = "Reject";
+    singleInviteDiv.appendChild(text);
+    singleInviteDiv.appendChild(acceptInviteBtn);
+    singleInviteDiv.appendChild(rejectInviteBtn);
+    acceptInviteBtn.addEventListener("click", () => {
+        invite.response = true;
+        respondInvites(invite);
+    });
+
+    rejectInviteBtn.addEventListener("click" , ()=> {
+        invite.response = false;
+        respondInvites(invite);
+    });
+
+    if(myInvitesDiv) {
+        myInvitesDiv.appendChild(singleInviteDiv);
+    };
+}   

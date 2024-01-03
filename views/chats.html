@@ -32,6 +32,7 @@
 					<button class="closeBtn" id="closeBtn">&times;</button>
 					<button id="myChats">Chats</button>
 					<button id="myContacts">My Contacts</button>
+					<button id="myInvites"> My Invites </button>
 					<!-- Add more buttons as needed -->
 				</div>
 				<div class="main-content">
@@ -78,6 +79,8 @@
 						</table>
 					</div>
 					<!-- Contact Table End  -->
+
+					<div id="myInvitesDiv" style="display: none;"></div>
 				</div>
 			</div>
 			<!--- Profile Modal  -->
@@ -141,6 +144,55 @@
 					</form>
 				</div>
 			</div>
+
+			<!-- Edit Group Modal  -->
+			<div class="modal" id="editGroupDiv">
+				<div class="modal-content">
+					<span class="close"> &times; </span>
+					<p class="title">Edit Group</p>
+					<button class="log" id="editGroupNameBtn"> Edit Group Name</button>
+					<button class="log" id="addGroupMembersBtn"> Add Group Members</button>
+					<button class="log" id="removeGroupMembersBtn"> Remove Grouup members </button>
+				</div>
+			</div>
+
+			<div class="modal" id="editGroupNameDiv">
+				<div class="modal-content">
+					<span class="close"> &times; </span>
+					<p class="title">Edit Group Name</p>
+					<form id="editGroupNameForm" action="/" method="post">
+						<input id="editGroupNameInput" type="text" placeholder="Enter New Group Name" required> 
+						<button class="submit" id="editGroupNameSubmitBtn" type="submit"> submit </button>
+					</form>
+				</div>
+			</div>
+
+			<div class="modal" id="removeGroupMembersDiv">
+				<div class="modal-content">
+					<span class="close"> &times; </span>
+					<p class="title">Remove Group Members</p>
+					<form id="removeGroupMemberForm" action="/" method="post">
+						<p class="message"> Group Members Details </p>
+						
+						<div id="GroupMemberList"></div>
+						<button id="removeGroupMemberSubmitBtn" class="submit">Submit</button>
+					</form>
+				</div>
+			</div>
+
+			<div class="modal" id="addGroupMembersDiv">
+				<div class="modal-content">
+					<span class="close"> &times; </span>
+					<p class="title">Add Group Members</p>
+					<form id="addGroupMemberForm" action="/" method="post">
+						<p class="message"> Members can be add details </p>
+						
+						<div id="addGroupMemberList"></div>
+						<button id="addGroupMemberSubmitBtn" class="submit">Submit</button>
+					</form>
+				</div>
+			</div>
+
 		</main>
 		
 		<script src="/socket.io/socket.io.js"></script>

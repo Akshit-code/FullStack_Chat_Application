@@ -48,7 +48,6 @@ io.on('connection', (socket) => {
         const { senderId, receiverId, message } = data;
         socket.to(receiverId).emit('newPrivateMessage', { senderId, message });
     });
-
     socket.on("joinGroupChat", (groupId:string) => {
         socket.join(groupId);
     });
@@ -70,8 +69,8 @@ io.on('connection', (socket) => {
             socket.join(data.senderId);
             console.log("Created sender Room");
         }
-    });
-    
+    })
+    // Event when a socket disconnects
     socket.on('disconnect', () => {
         console.log(`User disconnected: ${socket.id}`);
     });

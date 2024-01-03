@@ -9,7 +9,7 @@ class Contacts extends Model<InferAttributes<Contacts>, InferCreationAttributes<
     declare firstName: string;
     declare lastName: string;
     declare phoneNo: number;
-    declare contactId: string;
+    declare contactId: ForeignKey<User['id']>;
     declare UserId: ForeignKey<User['id']>;
     declare createdAt: CreationOptional<Date>;
     declare updatedAt: CreationOptional<Date>;
@@ -34,10 +34,6 @@ Contacts.init({
         type: DataTypes.INTEGER,
         allowNull: false,
     },
-    contactId : {
-        type:DataTypes.STRING,
-        allowNull:false
-    },
     createdAt:{
         type:DataTypes.DATE
     },
@@ -49,5 +45,5 @@ Contacts.init({
     tableName:'contacts',
     modelName: "Contacts",
 });
-      
+
 export default Contacts;

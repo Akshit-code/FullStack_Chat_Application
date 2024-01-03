@@ -1,7 +1,9 @@
 import {Router} from 'express'
 const router = Router();
 import {register, login, currentUser, addContact, 
-    getAllContacts, logoutUser, addGroup, getAllGroups} from '../controllers/userController';
+    getAllContacts, logoutUser, addGroup, 
+    getAllGroups, getAllGroupMembers, adminOperations, 
+    getAllInvites, responseInvites} from '../controllers/userController';
 import { sendMessage, getAllPrivateMessages, getAllGroupMessages, sendMediaMessage} from '../services/message'; 
 import authToken from '../middleware/authToken';
 import multer from 'multer';
@@ -18,6 +20,7 @@ router.get("/getAllContacts", authToken, getAllContacts );
 
 router.post("/addGroup", authToken, addGroup);
 router.get("/getAllGroups", authToken, getAllGroups);
+router.get("/getAllMembers/:groupId", authToken,getAllGroupMembers);
 
 router.post("/sendMessage", authToken, sendMessage);
 router.post("/sendMediaMessage", upload.single('file') , authToken, sendMediaMessage);
@@ -25,4 +28,7 @@ router.post("/sendMediaMessage", upload.single('file') , authToken, sendMediaMes
 router.get("/getAllPrivateMessages", authToken, getAllPrivateMessages);
 router.post("/getAllGroupMessages", authToken, getAllGroupMessages);
 
+router.post("/adminOps", authToken, adminOperations);
+router.get('/getAllInvites', authToken, getAllInvites);
+router.post("/responseInvites", authToken, responseInvites);
 export default router;

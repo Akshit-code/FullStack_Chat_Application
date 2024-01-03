@@ -60,8 +60,11 @@ User.init({
 });
 
 
-User.hasMany(Contacts);
-Contacts.belongsTo(User);
+User.hasMany(Contacts, {foreignKey: 'UserId'});
+Contacts.belongsTo(User, {foreignKey: 'UserId'});
+
+User.hasMany(Contacts, {foreignKey: 'contactId'});
+Contacts.belongsTo(User, {foreignKey: 'contactId'});
 
 User.hasMany(Groups);
 Groups.belongsTo(User);
