@@ -56,7 +56,6 @@ const addGroupMembersBtn: HTMLButtonElement | null = document.getElementById("ad
 const addGroupMemberListDiv: HTMLDivElement | null = document.getElementById("addGroupMemberList") as HTMLDivElement | null;
 const addGroupMemberForm: HTMLFormElement | null = document.getElementById("addGroupMemberForm") as HTMLFormElement | null;
 
-
 const chatsSectionDiv:HTMLDivElement | null = document.getElementById("chatsSectionDiv") as HTMLDivElement | null;
 const myChatsNavBtn:HTMLButtonElement | null = document.getElementById("myChats") as HTMLButtonElement | null;
 const myInvitesBtn:HTMLButtonElement | null = document.getElementById("myInvites") as HTMLButtonElement | null;
@@ -114,13 +113,11 @@ interface GroupDetails {
 }
 
 interface Message {
-    id: string;
     message: string;
     senderId: string;
     receiverId: string;
     messageType: string;
     createdAt: string;
-    updatedAt: string;
 }
 
 interface InvitiesDetails {
@@ -307,6 +304,9 @@ if (signUpForm) {
                 phoneNo: parseInt( phoneNo.value)
             };
             registerUser(formData);
+            if(loginDiv) {
+                loginDiv.style.display = "block";
+            };
         };
     });
 }
@@ -314,6 +314,10 @@ if (signUpForm) {
 if(loginForm) {
     loginForm.addEventListener("submit", (e)=> {
         e.preventDefault();
+        if(loginDiv) {
+            loginDiv.style.display = "none";
+        }
+        
         if(loginPhoneNo && loginPassword) {
             const formData:LoginForm = {
                 phoneNo: parseInt(loginPhoneNo.value),
@@ -350,9 +354,6 @@ if(addGroupForm) {
         }
         if(groupName) {
             addGroup(selectedUsers, groupName.value);
-        };
-        if(addGroupDiv) {
-            addGroupDiv.style.display = "none";
         };
         const checkboxes = document.querySelectorAll(`input[name=selectedUsers]:checked`);
         checkboxes.forEach((checkBox: any) => {
@@ -547,6 +548,7 @@ function generateContactList(contacts: any[]) {
 if(myInvitesBtn) {
     myInvitesBtn.addEventListener( "click", () => {
         if(myInvitesDiv) {
+            myInvitesDiv.innerHTML = '';
             getAllInvites();
             myInvitesDiv.style.display = "block";
            
@@ -573,11 +575,17 @@ function displayInvites(invite:InvitiesDetails) {
     acceptInviteBtn.addEventListener("click", () => {
         invite.response = true;
         respondInvites(invite);
+        acceptInviteBtn.remove();
+        rejectInviteBtn.remove();
+        singleInviteDiv.remove();
     });
 
     rejectInviteBtn.addEventListener("click" , ()=> {
         invite.response = false;
         respondInvites(invite);
+        acceptInviteBtn.remove();
+        rejectInviteBtn.remove();
+        singleInviteDiv.remove();
     });
 
     if(myInvitesDiv) {

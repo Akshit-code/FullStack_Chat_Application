@@ -77,7 +77,9 @@ function displayGroupCard(group: GroupDetails) {
             displayGroupHeader(group);
             composeGroupChats(group);
             getGroupChats(group);
-            getAllGroupMembers(group);
+            if(group.isAdmin === true) {
+                getAllGroupMembers(group);
+            }
             socketFunctions.joinOrCreateGroupRoom(group.GroupId);
         }
     );
@@ -185,7 +187,7 @@ function composeChats(contact: ContactDetails) {
         if(selectedFile) {
             sendMultiMediaMessage(selectedFile, contact.contactId, 'private');
         } else {
-            // sendMessage(message, contact.contactId, 'private');
+            sendMessage(message, contact.contactId, 'private');
             socketFunctions.sendPrivatemessage(currentUser.id, contact.contactId, message);
             displaySendMessage(message);
         }
@@ -233,7 +235,7 @@ function composeGroupChats(group: GroupDetails) {
             sendMultiMediaMessage(selectedFile, group.GroupId, 'group');
         } else {
             connectToSocket().sendGroupSocketMessage(currentUser.id,group.GroupId,message);
-            // sendMessage(message, group.GroupId, 'group');
+            sendMessage(message, group.GroupId, 'group');
             displaySendMessage(message);
         }
         messageInput.value = '';

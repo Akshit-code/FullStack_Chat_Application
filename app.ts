@@ -6,9 +6,13 @@ import bodyParser from 'body-parser';
 import dotenv from 'dotenv';
 import http from 'http';
 import {Server} from 'socket.io';
+import { CronJob } from 'cron';
 
 import sequelize from './utils/database';
 import router from './routes/routes';
+import Messages from './models/messages';
+import ArchivedChats from './models/archivedChats';
+import { Op } from 'sequelize';
 
 const app = express();
 const httpServer = http.createServer(app);
@@ -46,16 +50,16 @@ io.on('connection', (socket) => {
 
     socket.on('sendPrivateMessage', ( data:{senderId:string, receiverId:string, message:string} ) => {
         const { senderId, receiverId, message } = data;
-        socket.to(receiverId).emit('newPrivateMessage', { senderId, message });
-    });
+        socket.to(receiverId).emit('newPrivateMessage', { senderId,receiverId, message });
+    })
     socket.on("joinGroupChat", (groupId:string) => {
         socket.join(groupId);
     });
 
     socket.on("sendGroupMessage", (data: {currentUser:string,groupId:string, message:string})=> {
         socket.to(data.groupId).emit("receiveGroupMessage",{
-            currentUser: data.currentUser,
-            sender: socket.id,
+            senderId: data.currentUser,
+            receverId: data.groupId,
             message:data.message
         });
     });
@@ -69,13 +73,57 @@ io.on('connection', (socket) => {
             socket.join(data.senderId);
             console.log("Created sender Room");
         }
-    })
-    // Event when a socket disconnects
+    });
+
     socket.on('disconnect', () => {
         console.log(`User disconnected: ${socket.id}`);
     });
 });
 
+
+const moveMessages = async () => {
+    try {
+        const messageToArchive = await Messages.findAll( {
+            where:{
+                createdAt: { [Op.lt]:  new Date() }
+            }
+        } );
+
+       const messageData = messageToArchive.map( (msg) => (
+            {
+                message: msg.message,
+                senderId: msg.senderId,
+                receiverId: msg.receiverId,
+                messageType: msg.messageType,
+                createdAt: msg.createdAt,
+                updatedAt: msg.updatedAt
+            }
+        ));
+
+        await ArchivedChats.bulkCreate(messageData);
+
+        await Messages.destroy({
+            where: {
+                id: messageToArchive.map((msg) => msg.id)
+            }
+        });
+
+        console.log('Messages moved to Archive successfully!');
+    } catch (error) {
+        console.error('Error moving messages:', error);
+    }
+}
+
+const job = new CronJob(
+    '0 0 0 * * *',
+    moveMessages,
+    ()=>console.log("Completed CronJob"),
+    true,
+    null,
+    false,
+);
+
+job.start();
 sequelize.sync().then( () => {
     const port: number = parseInt(process.env.PORT || '3000');
     httpServer.listen(port, ()=> console.log(`Server is running at port: ${port}`));

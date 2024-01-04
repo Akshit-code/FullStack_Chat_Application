@@ -59,7 +59,6 @@ User.init({
     modelName: "User",
 });
 
-
 User.hasMany(Contacts, {foreignKey: 'UserId'});
 Contacts.belongsTo(User, {foreignKey: 'UserId'});
 

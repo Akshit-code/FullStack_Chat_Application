@@ -68,7 +68,10 @@ export  const getAllPrivateMessages = async (req:getAllPrivateMessagesRequest, r
                     {$senderId$: req.body.UserId, messageType: 'private'},
                     {$receiverId$: req.body.UserId, messageType: 'private'}
                 ]
-            },order: [['createdAt','ASC' ]],
+            },
+            attributes: {exclude: ['id','updatedAt'] },
+            order: [['createdAt','ASC' ]],
+            // limit:10,
             transaction
         } );
         transaction.commit();
@@ -87,6 +90,7 @@ export const getAllGroupMessages = async (req:getAllGroupMessageRequest, res:Res
             const message = await Messages.findAll( {
                 where: { $receiverId$: groupId, $messageType$: 'group' },
                 order: [['createdAt','ASC' ]],
+                // limit:10,
                 transaction
             } );
             return message;
