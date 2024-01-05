@@ -250,8 +250,9 @@ export const addGroup = async  (req:addGroupRequest, res:Response, _next:NextFun
                 groupName: req.body.groupName
             }, { transaction });
         });
-
+        
         await Promise.all(groupMembersPromises);
+        await Groups.update( {groupId: group.id}, {where: {$id$:group.id}, transaction} );
         await transaction.commit();
         console.log(`Added group: ${req.body.groupName}`);
         return res.status(201).json(group);
@@ -313,6 +314,30 @@ export const getAllGroupMembers =  async ( req:Request, res:Response, _next: Nex
     }
 }
 
+export const getAllAdmins = async (req:Request, res: Response, _next:NextFunction) => {
+    let transaction = await sequelize.transaction();
+    try {
+        const groupId = req.params.groupId;
+        const admins = await Groups.findAll({where : {groupId: groupId}, transaction});
+
+        const adminsDetailsPromises = admins.map(async (admin) => {
+            const user = await User.findOne({ where: { id: admin.UserId },
+                attributes: ['id', 'firstName', 'lastName'], transaction });
+            return user; 
+        });
+        const adminsDetails = await Promise.all(adminsDetailsPromises);
+
+        console.log(adminsDetails);
+        await transaction.commit();
+        return res.status(200).json(adminsDetails);
+    } catch (error) {
+        console.error(error);
+        await transaction.rollback();
+        return res.status(500).json({message: "Internal Server Error"});
+    }
+};
+
+
 export const adminOperations = async (req:adminOperationsReqest, res:Response, _next: NextFunction) => {
     let transaction = await sequelize.transaction();
 
@@ -323,7 +348,7 @@ export const adminOperations = async (req:adminOperationsReqest, res:Response, _
                 await isAdmin.update( {groupName: req.body.groupName}, {transaction});
                 await transaction.commit();
                 return res.status(201).json(req.body);
-            } else if( req.body.opsType === "addMembers" ) {
+            } else if ( req.body.opsType === "addMembers" ) {
                 await Promise.all(req.body.selectedMembers.map(async (member) => {
                     await Invites.create({
                         senderId: req.body.groupId,
@@ -334,12 +359,53 @@ export const adminOperations = async (req:adminOperationsReqest, res:Response, _
                 }));
                 await transaction.commit();
                 return res.status(201).json(req.body);
-            } else if( req.body.opsType === "removeMembers" ) {
+            } else if ( req.body.opsType === "removeMembers" ) {
                 req.body.selectedMembers.forEach( (member) => {
                     GroupMembers.destroy( {where: {$contactId$: member, $GroupId$: req.body.groupId}} );
                 } );
                 await transaction.commit();
                 return res.status(201).json(req.body);
+            } else if(req.body.opsType === 'addAdmin') {
+                const { selectedMembers, groupId, groupName } = req.body;
+
+                for(const memberId of selectedMembers) {
+                    await Groups.create( {
+                        groupName:groupName,
+                        groupId:groupId,
+                        UserId: memberId
+                    }, {transaction} );
+
+                    await GroupMembers.destroy( { 
+                        where: {
+                            contactId: memberId,
+                            GroupId: groupId,
+                            groupName: groupName
+                        }, transaction
+                    } )
+                };
+                await transaction.commit();
+                return res.status(201).json(req.body);
+            } else if ( req.body.opsType === 'removeAdmin') {
+                const { selectedMembers, groupId, groupName } = req.body;
+
+                for(const memberId of selectedMembers) {
+                    await Groups.destroy( {
+                        where: {
+                            $groupId$: groupId,
+                            $groupName$: groupName,
+                            $UserId$: memberId
+                        }, transaction
+                    } );
+
+                    await GroupMembers.create( {
+                        contactId:memberId,
+                        groupName:groupName,
+                        GroupId:groupId
+                    }, {transaction} );
+                };
+                await transaction.commit();
+                return res.status(201).json(req.body);
+
             }
         } else {
             await transaction.rollback();
@@ -349,6 +415,20 @@ export const adminOperations = async (req:adminOperationsReqest, res:Response, _
         console.log(req.body);
         await transaction.commit();
         return res.status(201).json(req.body);
+    } catch (error) {
+        console.error(error);
+        await transaction.rollback();
+        return res.status(500).json({message: "Internal Server Error"});
+    }
+}
+
+export const leaveGroup = async (req:Request, res:Response, _next:NextFunction ) => {
+    let transaction = await sequelize.transaction();
+    try {
+        const groupId= req.params.groupId;
+        await GroupMembers.destroy( {where: {$GroupId$: groupId, contactId: req.body.UserId }, transaction} );
+        transaction.commit();
+        return res.status(201).json({message: "User have left the group"});
     } catch (error) {
         console.error(error);
         await transaction.rollback();

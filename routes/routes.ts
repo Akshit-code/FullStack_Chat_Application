@@ -3,7 +3,7 @@ const router = Router();
 import {register, login, currentUser, addContact, 
     getAllContacts, logoutUser, addGroup, 
     getAllGroups, getAllGroupMembers, adminOperations, 
-    getAllInvites, responseInvites} from '../controllers/userController';
+    getAllInvites, responseInvites, getAllAdmins, leaveGroup} from '../controllers/userController';
 import { sendMessage, getAllPrivateMessages, getAllGroupMessages, sendMediaMessage} from '../services/message'; 
 import authToken from '../middleware/authToken';
 import multer from 'multer';
@@ -20,7 +20,9 @@ router.get("/getAllContacts", authToken, getAllContacts );
 
 router.post("/addGroup", authToken, addGroup);
 router.get("/getAllGroups", authToken, getAllGroups);
-router.get("/getAllMembers/:groupId", authToken,getAllGroupMembers);
+router.get("/getAllMembers/:groupId", authToken, getAllGroupMembers);
+router.get("/getAllAdmins/:groupId", authToken, getAllAdmins);
+router.get("/leaveGroup/:groupId", authToken, leaveGroup)
 
 router.post("/sendMessage", authToken, sendMessage);
 router.post("/sendMediaMessage", upload.single('file') , authToken, sendMediaMessage);

@@ -77,6 +77,7 @@ function displayGroupCard(group: GroupDetails) {
             displayGroupHeader(group);
             composeGroupChats(group);
             getGroupChats(group);
+            getAllAdmins(group);
             if(group.isAdmin === true) {
                 getAllGroupMembers(group);
             }
@@ -147,6 +148,9 @@ function displayGroupHeader(group:GroupDetails) {
             leaveGroupBtn.innerText = "Leave Group";
             leaveGroupBtn.style.float= "right";
             chatsheaderDiv.appendChild(leaveGroupBtn);
+            leaveGroupBtn.addEventListener("click", ()=> {
+                leaveGroup(group);
+            });
         }
         const headerTextNode = document.createTextNode(headerName);
         chatsheaderDiv.style.textAlign = "center";
@@ -396,9 +400,7 @@ async function getAllPrivateMessages() {
 }
 
 async function getAllGroupMessages() {
-
     const allGroupsId:string[] = allGroups.map( group => group.GroupId);
-    console.log(allGroupsId);
     try {
         const token = localStorage.getItem("token") || '';
         const response = await fetch('/chats/getAllGroupMessages', {
@@ -426,4 +428,30 @@ async function getAllGroupMessages() {
     } catch (error) {
         console.error("Error in fetching all group message", error);
     };
+}
+
+async function leaveGroup(group: GroupDetails) {
+    try {
+        const token = localStorage.getItem("token") || '';
+        const response = await fetch(`/chats/leaveGroup/${group.GroupId}`, {
+            method:'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            }
+        });
+
+        if(response.status === 201) {
+            await response.json();
+            console.log(`User left the group: ${group.groupName} `);
+        } else if (response.status === 401 || 403) {
+            console.log("Unauthorized User");
+        } else if( response.status === 404) {
+            console.log("User Details not Found");
+        } else {
+            console.log(`Error: ${response.statusText}`);
+        };
+    } catch (error) {
+        console.error("Error in fetching leave group request", error);
+    }
 }

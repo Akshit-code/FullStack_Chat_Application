@@ -38,6 +38,8 @@ const addGroupForm:HTMLFormElement | null = document.getElementById("addGroupFor
 const groupName: FormElement | null = document.getElementById("groupName") as FormElement | null;
 const addGroupBtn: HTMLButtonElement | null = document.getElementById("createGroup-btn") as HTMLButtonElement | null;
 const groupSubmitBtn:HTMLButtonElement | null = document.getElementById("Group-Submit-Btn") as HTMLButtonElement | null;
+const addAdminBtn:HTMLButtonElement | null = document.getElementById("addAdminBtn") as HTMLButtonElement | null;
+const removeAdminBtn:HTMLButtonElement | null = document.getElementById("removeAdminBtn") as HTMLButtonElement | null;
 
 const editGroupDiv: HTMLDivElement | null = document.getElementById("editGroupDiv")  as HTMLDivElement | null;
 const editGroupNameDiv: HTMLDivElement | null = document.getElementById("editGroupNameDiv") as HTMLDivElement | null;
@@ -55,6 +57,16 @@ const addGroupMembersDiv: HTMLDivElement | null = document.getElementById("addGr
 const addGroupMembersBtn: HTMLButtonElement | null = document.getElementById("addGroupMembersBtn") as HTMLButtonElement | null;
 const addGroupMemberListDiv: HTMLDivElement | null = document.getElementById("addGroupMemberList") as HTMLDivElement | null;
 const addGroupMemberForm: HTMLFormElement | null = document.getElementById("addGroupMemberForm") as HTMLFormElement | null;
+
+const addAdminDiv:HTMLDivElement | null = document.getElementById("addAdminDiv") as HTMLDivElement | null;
+const addAdminDivListDiv:HTMLDivElement | null = document.getElementById("addAdminList") as HTMLDivElement | null;
+const addAdminForm:HTMLFormElement | null = document.getElementById("addAdminForm") as HTMLFormElement | null;
+const addAdminSubmitBtn: HTMLButtonElement | null = document.getElementById("addAdminSubmitBtn") as HTMLButtonElement | null;
+
+const removeAdminDiv:HTMLDivElement | null = document.getElementById("removeAdminDiv") as HTMLDivElement | null;
+const removeAdminListDIv: HTMLDivElement | null = document.getElementById("removeAdminList") as HTMLDivElement | null;
+const removeAdminForm: HTMLFormElement | null = document.getElementById("removeAdminForm") as HTMLFormElement | null;
+const removeAdminSubmitBtn:HTMLButtonElement | null = document.getElementById("emoveAdminSubmitBtn") as HTMLButtonElement | null;
 
 const chatsSectionDiv:HTMLDivElement | null = document.getElementById("chatsSectionDiv") as HTMLDivElement | null;
 const myChatsNavBtn:HTMLButtonElement | null = document.getElementById("myChats") as HTMLButtonElement | null;
@@ -181,6 +193,12 @@ if (window) {
                 if(removeGroupMembersDiv) {
                     removeGroupMembersDiv.style.display = "none";
                 };
+                if(addAdminDiv) {
+                    addAdminDiv.style.display = "none";
+                };
+                if(removeAdminDiv) {
+                    removeAdminDiv.style.display = "none";
+                };
             };
         });
     };
@@ -276,6 +294,32 @@ if(addGroupMembersBtn) {
             addGroupMembersDiv.style.display = "block";
         }
     });
+}
+
+if(addAdminBtn) {
+    addAdminBtn.addEventListener( "click", () => {
+
+        if(addAdminDiv) {
+            const checkboxes = document.querySelectorAll(`input[name=selectedUsers]:checked`);
+            checkboxes.forEach((checkBox: any) => {
+                checkBox.checked = false;
+            });
+            addAdminDiv.style.display = "block";
+        };
+
+    } )
+}
+
+if(removeAdminBtn) {
+    removeAdminBtn.addEventListener( "click", ()=> {
+        if(removeAdminDiv) {
+            const checkboxes = document.querySelectorAll(`input[name=selectedUsers]:checked`);
+            checkboxes.forEach((checkBox: any) => {
+                checkBox.checked = false;
+            });
+            removeAdminDiv.style.display = "block";
+        }
+    })
 }
 
 function signUpFormValidation(): void {
@@ -412,6 +456,43 @@ if(editGroupNameForm) {
         };
        
     });
+}
+
+if(addAdminForm) {
+    addAdminForm.addEventListener("submit", (e) => {
+        e.preventDefault();
+        if(addAdminDiv){
+            addAdminDiv.style.display = "none";
+        };
+
+        const selectedUsers = Array.from(document.querySelectorAll(`input[name=selectedUsers]:checked`)).map((checkBox:any) => checkBox.value);
+        console.log("Selected Users:", selectedUsers);
+        adminOperations(selectedUsers, currentGroup.groupName, "addAdmin");
+
+        const checkboxes = document.querySelectorAll(`input[name=selectedUsers]:checked`);
+        checkboxes.forEach((checkBox: any) => {
+            checkBox.checked = false;
+        });
+
+    })
+}
+
+if(removeAdminForm) {
+    removeAdminForm.addEventListener("submit", (e) => {
+        e.preventDefault();
+        if(removeAdminDiv) {
+            removeAdminDiv.style.display = "none";
+        };
+
+        const selectedUsers = Array.from(document.querySelectorAll(`input[name=selectedUsers]:checked`)).map((checkBox:any) => checkBox.value);
+        console.log("Selected Users:", selectedUsers);
+        adminOperations(selectedUsers, currentGroup.groupName, "removeAdmin");
+
+        const checkboxes = document.querySelectorAll(`input[name=selectedUsers]:checked`);
+        checkboxes.forEach((checkBox: any) => {
+            checkBox.checked = false;
+        });
+    })
 }
 
 let socketFunctions: any;

@@ -7,7 +7,6 @@ import sequelize from "../utils/database";
 import { AWS_Instance } from "../config/aws";
 import Messages from "../models/messages";
 
-
 dotenv.config();
 AWS.config.update ( {
     accessKeyId: AWS_Instance.aws_access_key_id,
@@ -108,8 +107,6 @@ export const getAllGroupMessages = async (req:getAllGroupMessageRequest, res:Res
 }
 
 export const sendMediaMessage = async (req:Request, res:Response,  _next:NextFunction) => {
-    console.log("Req Body: ",req.body);
-    console.log("Req files; ",req.file);
     let transaction = await sequelize.transaction();
     try {
         if (!req.file || Object.keys(req.file).length === 0) {

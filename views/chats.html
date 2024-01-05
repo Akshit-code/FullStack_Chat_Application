@@ -153,6 +153,8 @@
 					<button class="log" id="editGroupNameBtn"> Edit Group Name</button>
 					<button class="log" id="addGroupMembersBtn"> Add Group Members</button>
 					<button class="log" id="removeGroupMembersBtn"> Remove Grouup members </button>
+					<button class="log" id="addAdminBtn"> Add Admin </button>
+					<button class="log" id="removeAdminBtn"> Remove Admin </button>
 				</div>
 			</div>
 
@@ -189,6 +191,33 @@
 						
 						<div id="addGroupMemberList"></div>
 						<button id="addGroupMemberSubmitBtn" class="submit">Submit</button>
+					</form>
+				</div>
+			</div>
+
+			
+			<div class="modal" id="addAdminDiv">
+				<div class="modal-content">
+					<span class="close"> &times; </span>
+					<p class="title">Add Admin</p>
+					<form id="addAdminForm" action="/" method="post">
+						<p class="message"> Selected Members will become admin </p>
+						
+						<div id="addAdminList"></div>
+						<button id="addAdminSubmitBtn" class="submit">Submit</button>
+					</form>
+				</div>
+			</div>
+			
+			<div class="modal" id="removeAdminDiv">
+				<div class="modal-content">
+					<span class="close"> &times; </span>
+					<p class="title">Remove Admin</p>
+					<form id="removeAdminForm" action="/" method="post">
+						<p class="message"> Selected Members will be removed from Admin </p>
+						
+						<div id="removeAdminList"></div>
+						<button id="removeAdminSubmitBtn" class="submit">Submit</button>
 					</form>
 				</div>
 			</div>

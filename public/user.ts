@@ -263,6 +263,10 @@ async function getAllGroupMembers(group: GroupDetails) {
             if(groupMemberListDiv) {
                 groupMemberListDiv.appendChild(allGroupsMembers);
             };
+
+            if(addAdminDivListDiv) {
+                addAdminDivListDiv.appendChild(allGroupsMembers);
+            }
            
             const nonGroupMembersList:ContactDetails[] = [];
 
@@ -275,6 +279,8 @@ async function getAllGroupMembers(group: GroupDetails) {
             if(addGroupMemberListDiv) {
                 addGroupMemberListDiv.appendChild(nonMembers);
             };
+
+
             console.log("Fetched sucessfully all group members details");
         } else if (response.status === 401 || 403) {
             console.log("Unauthorized User");
@@ -285,6 +291,40 @@ async function getAllGroupMembers(group: GroupDetails) {
         }
     } catch (error) {
         console.error("Error in fetching all Group Members Details",error);
+    }
+}
+
+async function getAllAdmins(group: GroupDetails) {
+    const token = localStorage.getItem("token") || '';
+    try {
+        const response = await fetch(`chats/getAllAdmins/${group.GroupId}`, {
+            method: "GET",
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            }
+        })
+
+        if(response.status === 200) {
+            const data:any[] = await response.json();
+            
+            data.forEach( (admin:any) => {
+                admin.contactId = admin.id;
+            } );
+            const groupAdminslist= generateContactList(data);
+            if(removeAdminListDIv) {
+                removeAdminListDIv.appendChild(groupAdminslist);
+            };
+            console.log("Fetched sucessfully all group admins details");
+        } else if (response.status === 401 || 403) {
+            console.log("Unauthorized User");
+        } else if( response.status === 404) {
+            console.log("User Details not Found");
+        } else {
+            console.log(`Error: ${response.statusText}`);
+        }
+    } catch (error) {
+        console.error("Error in fetching all Group Admins Details",error);
     }
 }
 
@@ -307,7 +347,7 @@ async function adminOperations(selectedUsers: any[], groupName:string, opsType:s
 
         if(response.status === 201) {
             await response.json();
-            console.log("Admin Operatin Done successfully");
+            console.log("Admin Operation Done successfully");
             // displayGroupCard(data);
         } else if (response.status === 401 || 403) {
             console.log("Unauthorized User");
